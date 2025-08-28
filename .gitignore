@@ -1,0 +1,18 @@
+# --- Java / Build ---
+target/
+build/
+out/
+*.class
+*.jar
+*.war
+*.ear
+
+# --- VS Code ---
+.vscode/
+
+# --- Spring Boot specific ---
+# Embedded Tomcat / Jetty / etc.
+.spring-boot-devtools.pr
+
+# --- Bruno API client ---
+orderly/
