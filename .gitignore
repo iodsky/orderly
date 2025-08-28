@@ -14,5 +14,5 @@ out/
 # Embedded Tomcat / Jetty / etc.
 .spring-boot-devtools.pr
 
-# --- Bruno API client ---
-orderly/
+# --- API client ---
+client/
