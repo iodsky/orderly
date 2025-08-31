@@ -2,13 +2,16 @@ package com.iodsky.orderly.service.product;
 
 import com.iodsky.orderly.dto.product.ProductDto;
 import com.iodsky.orderly.dto.product.ProductRequestDto;
+import com.iodsky.orderly.model.Product;
 
 import java.util.List;
 
 public interface IProductService {
     ProductDto addProduct(ProductRequestDto productRequestDto);
 
-    ProductDto getProductById(Long id);
+    Product getProductEntity(Long id);
+
+    ProductDto getProductDto(Long id);
 
     void deleteProductById(Long id);
 

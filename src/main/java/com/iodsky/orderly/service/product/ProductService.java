@@ -35,10 +35,16 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public ProductDto getProductById(Long id) {
+    public Product getProductEntity(Long id) {
+        return productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found for id " + id));
+    }
+
+    @Override
+    public ProductDto getProductDto(Long id) {
         Product product = productRepository
                 .findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found for id " + id));
 
         return modelMapper.map(product, ProductDto.class);
     }
@@ -46,14 +52,14 @@ public class ProductService implements IProductService {
     @Override
     public void deleteProductById(Long id) {
         productRepository.findById(id).ifPresentOrElse(productRepository::delete, () -> {
-            throw new ResourceNotFoundException("Product not found");
+            throw new ResourceNotFoundException("Product not found for id " + id);
         });
     }
 
     @Override
     public ProductDto updateProduct(Long id, ProductRequestDto productRequestDto) {
         Product existingProduct = productRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found for id " + id));
 
         existingProduct.setName(productRequestDto.getName());
         existingProduct.setDescription(productRequestDto.getDescription());
