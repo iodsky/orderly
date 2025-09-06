@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,7 +44,7 @@ public class CategoryController {
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<CategoryDto> updateCategory(@PathVariable() Long id,
+  public ResponseEntity<CategoryDto> updateCategory(@PathVariable() UUID id,
       @Valid() @RequestBody() CategoryDto categoryDto) {
     CategoryDto category = CategoryMapper.toDto(categoryService.updateCategory(id, categoryDto));
 
@@ -51,7 +52,7 @@ public class CategoryController {
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<String> deleteProduct(@PathVariable() Long id) {
+  public ResponseEntity<String> deleteProduct(@PathVariable() UUID id) {
     categoryService.deleteCategoryById(id);
     return ResponseEntity.ok("Category deleted successfully");
   }

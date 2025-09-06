@@ -1,6 +1,7 @@
 package com.iodsky.orderly.controller;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,20 +50,20 @@ public class ProductController {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<ProductDto> getProductById(@PathVariable Long id) {
+  public ResponseEntity<ProductDto> getProductById(@PathVariable UUID id) {
     Product product = productService.getProductDto(id);
     return ResponseEntity.ok(ProductMapper.toDto(product));
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<ProductDto> updateProduct(@PathVariable Long id,
+  public ResponseEntity<ProductDto> updateProduct(@PathVariable UUID id,
       @Valid() @RequestBody() ProductRequestDto productRequestDto) {
     Product product = productService.updateProduct(id, productRequestDto);
     return ResponseEntity.ok(ProductMapper.toDto(product));
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<String> deleteProduct(@PathVariable Long id) {
+  public ResponseEntity<String> deleteProduct(@PathVariable UUID id) {
     productService.deleteProductById(id);
     return ResponseEntity.ok("Product deleted successfully");
   }

@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -32,27 +33,27 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public Product getProductEntity(Long id) {
+    public Product getProductEntity(UUID id) {
         return productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found for id " + id));
     }
 
     @Override
-    public Product getProductDto(Long id) {
+    public Product getProductDto(UUID id) {
         return productRepository
                 .findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found for id " + id));
     }
 
     @Override
-    public void deleteProductById(Long id) {
+    public void deleteProductById(UUID id) {
         productRepository.findById(id).ifPresentOrElse(productRepository::delete, () -> {
             throw new ResourceNotFoundException("Product not found for id " + id);
         });
     }
 
     @Override
-    public Product updateProduct(Long id, ProductRequestDto productRequestDto) {
+    public Product updateProduct(UUID id, ProductRequestDto productRequestDto) {
         Product existingProduct = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found for id " + id));
 

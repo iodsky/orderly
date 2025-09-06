@@ -1,6 +1,7 @@
 package com.iodsky.orderly.service.category;
 
 import java.util.List;
+import java.util.UUID;
 
 import com.iodsky.orderly.dto.category.CategoryDto;
 import com.iodsky.orderly.model.Category;
@@ -8,11 +9,11 @@ import com.iodsky.orderly.model.Category;
 public interface ICategoryService {
   Category addCategory(CategoryDto CategoryDto);
 
-  Category getCategoryById(Long id);
+  Category getCategoryById(UUID id);
 
   List<Category> getAllCategories();
 
-  Category updateCategory(Long id, CategoryDto CategoryDto);
+  Category updateCategory(UUID id, CategoryDto CategoryDto);
 
-  void deleteCategoryById(Long id);
+  void deleteCategoryById(UUID id);
 }

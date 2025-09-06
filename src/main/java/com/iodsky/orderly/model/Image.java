@@ -1,5 +1,7 @@
 package com.iodsky.orderly.model;
 
+import java.util.UUID;
+
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -7,8 +9,8 @@ import lombok.Data;
 @Entity
 public class Image {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
     private String fileName;
     private String fileType;
 
