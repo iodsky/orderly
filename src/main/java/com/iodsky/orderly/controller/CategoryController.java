@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.iodsky.orderly.dto.category.CategoryDto;
+import com.iodsky.orderly.dto.mapper.CategoryMapper;
 import com.iodsky.orderly.service.category.CategoryService;
 
 import jakarta.validation.Valid;
@@ -29,14 +30,14 @@ public class CategoryController {
 
   @PostMapping
   public ResponseEntity<CategoryDto> createCategory(@Valid() @RequestBody CategoryDto categoryDto) {
-    CategoryDto saved = categoryService.addCategory(categoryDto);
+    CategoryDto category = CategoryMapper.toDto(categoryService.addCategory(categoryDto));
 
-    return new ResponseEntity<>(saved, HttpStatus.CREATED);
+    return new ResponseEntity<>(category, HttpStatus.CREATED);
   }
 
   @GetMapping
   public ResponseEntity<List<CategoryDto>> getCategories() {
-    List<CategoryDto> categories = categoryService.getAllCategories();
+    List<CategoryDto> categories = categoryService.getAllCategories().stream().map(CategoryMapper::toDto).toList();
 
     return ResponseEntity.ok(categories);
   }
@@ -44,7 +45,7 @@ public class CategoryController {
   @PutMapping("/{id}")
   public ResponseEntity<CategoryDto> updateCategory(@PathVariable() Long id,
       @Valid() @RequestBody() CategoryDto categoryDto) {
-    CategoryDto category = categoryService.updateCategory(id, categoryDto);
+    CategoryDto category = CategoryMapper.toDto(categoryService.updateCategory(id, categoryDto));
 
     return ResponseEntity.ok(category);
   }
