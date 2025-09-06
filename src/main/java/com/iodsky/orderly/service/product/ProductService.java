@@ -1,6 +1,6 @@
 package com.iodsky.orderly.service.product;
 
-import com.iodsky.orderly.dto.product.ProductDto;
+import com.iodsky.orderly.dto.mapper.ProductMapper;
 import com.iodsky.orderly.dto.product.ProductRequestDto;
 import com.iodsky.orderly.exceptions.ResourceNotFoundException;
 import com.iodsky.orderly.model.Category;
@@ -8,7 +8,6 @@ import com.iodsky.orderly.model.Product;
 import com.iodsky.orderly.repository.CategoryRepository;
 import com.iodsky.orderly.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,19 +18,17 @@ public class ProductService implements IProductService {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
-    private final ModelMapper modelMapper;
 
     @Override
-    public ProductDto addProduct(ProductRequestDto productRequestDto) {
+    public Product addProduct(ProductRequestDto productRequestDto) {
         Category category = categoryRepository.findByName(productRequestDto.getCategory())
-                .orElseGet(() -> categoryRepository.save(new Category(productRequestDto.getCategory())));
+                .orElseGet(() -> categoryRepository
+                        .save(Category.builder().name(productRequestDto.getCategory()).build()));
 
-        Product product = modelMapper.map(productRequestDto, Product.class);
+        Product product = ProductMapper.toEntity(productRequestDto);
         product.setCategory(category);
 
-        Product saved = productRepository.save(product);
-
-        return modelMapper.map(saved, ProductDto.class);
+        return productRepository.save(product);
     }
 
     @Override
@@ -41,12 +38,10 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public ProductDto getProductDto(Long id) {
-        Product product = productRepository
+    public Product getProductDto(Long id) {
+        return productRepository
                 .findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found for id " + id));
-
-        return modelMapper.map(product, ProductDto.class);
     }
 
     @Override
@@ -57,7 +52,7 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public ProductDto updateProduct(Long id, ProductRequestDto productRequestDto) {
+    public Product updateProduct(Long id, ProductRequestDto productRequestDto) {
         Product existingProduct = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found for id " + id));
 
@@ -68,17 +63,16 @@ public class ProductService implements IProductService {
         existingProduct.setStock(productRequestDto.getStock());
 
         Category category = categoryRepository.findByName(productRequestDto.getCategory())
-                .orElseGet(() -> categoryRepository.save(new Category(productRequestDto.getCategory())));
+                .orElseGet(() -> categoryRepository
+                        .save(Category.builder().name(productRequestDto.getCategory()).build()));
 
         existingProduct.setCategory(category);
 
-        Product updated = productRepository.save(existingProduct);
-
-        return modelMapper.map(updated, ProductDto.class);
+        return productRepository.save(existingProduct);
     }
 
     @Override
-    public List<ProductDto> getProducts(String name, String category, String brand) {
+    public List<Product> getProducts(String name, String category, String brand) {
         List<Product> products;
 
         if (category != null && brand != null) {
@@ -95,9 +89,7 @@ public class ProductService implements IProductService {
             products = productRepository.findAll();
         }
 
-        return products.stream()
-                .map(p -> modelMapper.map(p, ProductDto.class))
-                .toList();
+        return products;
     }
 
     @Override
