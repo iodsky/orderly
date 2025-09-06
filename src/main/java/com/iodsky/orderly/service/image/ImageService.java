@@ -4,11 +4,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.iodsky.orderly.dto.image.ImageDto;
 import com.iodsky.orderly.exceptions.ResourceNotFoundException;
 import com.iodsky.orderly.model.Image;
 import com.iodsky.orderly.model.Product;
@@ -23,13 +21,11 @@ public class ImageService implements IImageService {
 
   private final ImageRepository imageRepository;
   private final ProductService productService;
-  private final ModelMapper modelMapper;
 
   @Override
-  public ImageDto getImageById(Long id) {
-    Image image = imageRepository.findById(id)
+  public Image getImageById(Long id) {
+    return imageRepository.findById(id)
         .orElseThrow(() -> new ResourceNotFoundException("Image not found for id " + id));
-    return modelMapper.map(image, ImageDto.class);
   }
 
   @Override
@@ -40,7 +36,7 @@ public class ImageService implements IImageService {
   }
 
   @Override
-  public List<ImageDto> saveImage(List<MultipartFile> files, Long productId) {
+  public List<Image> saveImage(List<MultipartFile> files, Long productId) {
     Product product = productService.getProductEntity(productId);
 
     List<Image> savedImages = new ArrayList<>();
@@ -56,14 +52,14 @@ public class ImageService implements IImageService {
         savedImages.add(savedImage);
       }
 
-      return savedImages.stream().map(image -> modelMapper.map(image, ImageDto.class)).toList();
+      return savedImages;
     } catch (IOException e) {
       throw new RuntimeException("An error has occured while saving image " + e.getMessage());
     }
   }
 
   @Override
-  public ImageDto updateImage(MultipartFile file, Long imageId) {
+  public Image updateImage(MultipartFile file, Long imageId) {
     Image existingImage = imageRepository.findById(imageId)
         .orElseThrow(() -> new ResourceNotFoundException("Image not found for id " + imageId));
 
@@ -72,8 +68,7 @@ public class ImageService implements IImageService {
       existingImage.setFileName(file.getOriginalFilename());
       existingImage.setImage(file.getBytes());
 
-      Image updated = imageRepository.save(existingImage);
-      return modelMapper.map(updated, ImageDto.class);
+      return imageRepository.save(existingImage);
     } catch (IOException e) {
       throw new RuntimeException("An error has occured while updating image " + e.getMessage());
     }

@@ -4,14 +4,14 @@ import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import com.iodsky.orderly.dto.image.ImageDto;
+import com.iodsky.orderly.model.Image;
 
 public interface IImageService {
-  ImageDto getImageById(Long id);
+  Image getImageById(Long id);
 
   void deleteImageById(Long id);
 
-  List<ImageDto> saveImage(List<MultipartFile> files, Long productId);
+  List<Image> saveImage(List<MultipartFile> files, Long productId);
 
-  ImageDto updateImage(MultipartFile file, Long imageId);
+  Image updateImage(MultipartFile file, Long imageId);
 }
