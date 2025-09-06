@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.iodsky.orderly.dto.mapper.ProductMapper;
 import com.iodsky.orderly.dto.product.ProductDto;
 import com.iodsky.orderly.dto.product.ProductRequestDto;
+import com.iodsky.orderly.model.Product;
 import com.iodsky.orderly.service.product.ProductService;
 
 import jakarta.validation.Valid;
@@ -31,8 +33,8 @@ public class ProductController {
 
   @PostMapping
   public ResponseEntity<ProductDto> createProduct(@Valid() @RequestBody() ProductRequestDto productRequestDto) {
-    ProductDto product = productService.addProduct(productRequestDto);
-    return new ResponseEntity<>(product, HttpStatus.CREATED);
+    Product product = productService.addProduct(productRequestDto);
+    return new ResponseEntity<>(ProductMapper.toDto(product), HttpStatus.CREATED);
   }
 
   @GetMapping
@@ -41,21 +43,22 @@ public class ProductController {
       @RequestParam(required = false) String brand,
       @RequestParam(required = false) String name) {
 
-    List<ProductDto> products = productService.getProducts(name, category, brand);
+    List<ProductDto> products = productService.getProducts(name, category, brand).stream()
+        .map(ProductMapper::toDto).toList();
     return ResponseEntity.ok(products);
   }
 
   @GetMapping("/{id}")
   public ResponseEntity<ProductDto> getProductById(@PathVariable Long id) {
-    ProductDto product = productService.getProductDto(id);
-    return ResponseEntity.ok(product);
+    Product product = productService.getProductDto(id);
+    return ResponseEntity.ok(ProductMapper.toDto(product));
   }
 
   @PutMapping("/{id}")
   public ResponseEntity<ProductDto> updateProduct(@PathVariable Long id,
       @Valid() @RequestBody() ProductRequestDto productRequestDto) {
-    ProductDto updatedProduct = productService.updateProduct(id, productRequestDto);
-    return ResponseEntity.ok(updatedProduct);
+    Product product = productService.updateProduct(id, productRequestDto);
+    return ResponseEntity.ok(ProductMapper.toDto(product));
   }
 
   @DeleteMapping("/{id}")
