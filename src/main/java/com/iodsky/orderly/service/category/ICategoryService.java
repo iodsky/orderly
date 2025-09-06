@@ -6,13 +6,13 @@ import com.iodsky.orderly.dto.category.CategoryDto;
 import com.iodsky.orderly.model.Category;
 
 public interface ICategoryService {
-  CategoryDto addCategory(CategoryDto CategoryDto);
+  Category addCategory(CategoryDto CategoryDto);
 
   Category getCategoryById(Long id);
 
-  List<CategoryDto> getAllCategories();
+  List<Category> getAllCategories();
 
-  CategoryDto updateCategory(Long id, CategoryDto CategoryDto);
+  Category updateCategory(Long id, CategoryDto CategoryDto);
 
   void deleteCategoryById(Long id);
 }
