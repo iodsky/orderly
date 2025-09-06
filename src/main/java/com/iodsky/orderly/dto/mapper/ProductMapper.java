@@ -8,9 +8,15 @@ import com.iodsky.orderly.dto.product.ProductDto;
 import com.iodsky.orderly.dto.product.ProductRequestDto;
 import com.iodsky.orderly.model.Product;
 
+import lombok.RequiredArgsConstructor;
+
 @Component
+@RequiredArgsConstructor
 public class ProductMapper {
-  public static ProductDto toDto(Product product) {
+
+  private final ImageMapper imageMapper;
+
+  public ProductDto toDto(Product product) {
     if (product == null) {
       return null;
     }
@@ -21,11 +27,11 @@ public class ProductMapper {
         .description(product.getDescription())
         .price(product.getPrice()).stock(product.getStock())
         .category(product.getCategory().getName())
-        .images(product.getImages().stream().map(ImageMapper::toDto).toList())
+        .images(product.getImages().stream().map(imageMapper::toDto).toList())
         .build();
   }
 
-  public static Product toEntity(ProductRequestDto dto) {
+  public Product toEntity(ProductRequestDto dto) {
     if (dto == null) {
       return null;
     }

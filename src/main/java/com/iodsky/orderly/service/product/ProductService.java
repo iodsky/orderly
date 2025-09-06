@@ -19,6 +19,7 @@ public class ProductService implements IProductService {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private final ProductMapper productMapper;
 
     @Override
     public Product addProduct(ProductRequestDto productRequestDto) {
@@ -26,7 +27,7 @@ public class ProductService implements IProductService {
                 .orElseGet(() -> categoryRepository
                         .save(Category.builder().name(productRequestDto.getCategory()).build()));
 
-        Product product = ProductMapper.toEntity(productRequestDto);
+        Product product = productMapper.toEntity(productRequestDto);
         product.setCategory(category);
 
         return productRepository.save(product);

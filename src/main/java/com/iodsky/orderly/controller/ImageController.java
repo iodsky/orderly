@@ -31,13 +31,14 @@ import lombok.RequiredArgsConstructor;
 public class ImageController {
 
   private final ImageService imageService;
+  private final ImageMapper imageMapper;
 
   @PostMapping()
   public ResponseEntity<List<ImageDto>> uploadImage(
       @RequestParam() List<MultipartFile> images,
       @RequestParam() UUID productId) {
     List<ImageDto> savedImages = imageService.saveImage(images, productId).stream()
-        .map(ImageMapper::toDto)
+        .map(imageMapper::toDto)
         .toList();
     return new ResponseEntity<>(savedImages, HttpStatus.CREATED);
   }
@@ -52,7 +53,7 @@ public class ImageController {
 
   @PutMapping("{id}")
   public ResponseEntity<ImageDto> updateImage(@PathVariable() UUID id, @RequestParam() MultipartFile image) {
-    ImageDto updatedImage = ImageMapper.toDto(imageService.updateImage(image, id));
+    ImageDto updatedImage = imageMapper.toDto(imageService.updateImage(image, id));
     return ResponseEntity.ok(updatedImage);
   }
 

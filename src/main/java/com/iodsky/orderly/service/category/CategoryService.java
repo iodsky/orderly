@@ -21,11 +21,12 @@ import lombok.RequiredArgsConstructor;
 public class CategoryService implements ICategoryService {
 
   private final CategoryRepository categoryRepository;
+  private final CategoryMapper categoryMapper;
 
   @Override
   public Category addCategory(CategoryDto categoryDto) {
     try {
-      Category category = CategoryMapper.toEntity(categoryDto);
+      Category category = categoryMapper.toEntity(categoryDto);
 
       return categoryRepository.save(category);
 

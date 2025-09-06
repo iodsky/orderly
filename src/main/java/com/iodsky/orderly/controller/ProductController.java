@@ -31,11 +31,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 public class ProductController {
 
   private final ProductService productService;
+  private final ProductMapper productMapper;
 
   @PostMapping
   public ResponseEntity<ProductDto> createProduct(@Valid() @RequestBody() ProductRequestDto productRequestDto) {
     Product product = productService.addProduct(productRequestDto);
-    return new ResponseEntity<>(ProductMapper.toDto(product), HttpStatus.CREATED);
+    return new ResponseEntity<>(productMapper.toDto(product), HttpStatus.CREATED);
   }
 
   @GetMapping
@@ -45,21 +46,21 @@ public class ProductController {
       @RequestParam(required = false) String name) {
 
     List<ProductDto> products = productService.getProducts(name, category, brand).stream()
-        .map(ProductMapper::toDto).toList();
+        .map(productMapper::toDto).toList();
     return ResponseEntity.ok(products);
   }
 
   @GetMapping("/{id}")
   public ResponseEntity<ProductDto> getProductById(@PathVariable UUID id) {
     Product product = productService.getProductDto(id);
-    return ResponseEntity.ok(ProductMapper.toDto(product));
+    return ResponseEntity.ok(productMapper.toDto(product));
   }
 
   @PutMapping("/{id}")
   public ResponseEntity<ProductDto> updateProduct(@PathVariable UUID id,
       @Valid() @RequestBody() ProductRequestDto productRequestDto) {
     Product product = productService.updateProduct(id, productRequestDto);
-    return ResponseEntity.ok(ProductMapper.toDto(product));
+    return ResponseEntity.ok(productMapper.toDto(product));
   }
 
   @DeleteMapping("/{id}")

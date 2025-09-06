@@ -8,7 +8,7 @@ import com.iodsky.orderly.model.Image;
 
 @Component
 public class ImageMapper {
-  public static ImageDto toDto(Image image) {
+  public ImageDto toDto(Image image) {
     if (image == null) {
       return null;
     }

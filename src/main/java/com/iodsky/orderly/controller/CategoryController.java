@@ -28,17 +28,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 public class CategoryController {
 
   private final CategoryService categoryService;
+  private final CategoryMapper categoryMapper;
 
   @PostMapping
   public ResponseEntity<CategoryDto> createCategory(@Valid() @RequestBody CategoryDto categoryDto) {
-    CategoryDto category = CategoryMapper.toDto(categoryService.addCategory(categoryDto));
+    CategoryDto category = categoryMapper.toDto(categoryService.addCategory(categoryDto));
 
     return new ResponseEntity<>(category, HttpStatus.CREATED);
   }
 
   @GetMapping
   public ResponseEntity<List<CategoryDto>> getCategories() {
-    List<CategoryDto> categories = categoryService.getAllCategories().stream().map(CategoryMapper::toDto).toList();
+    List<CategoryDto> categories = categoryService.getAllCategories().stream().map(categoryMapper::toDto).toList();
 
     return ResponseEntity.ok(categories);
   }
@@ -46,7 +47,7 @@ public class CategoryController {
   @PutMapping("/{id}")
   public ResponseEntity<CategoryDto> updateCategory(@PathVariable() UUID id,
       @Valid() @RequestBody() CategoryDto categoryDto) {
-    CategoryDto category = CategoryMapper.toDto(categoryService.updateCategory(id, categoryDto));
+    CategoryDto category = categoryMapper.toDto(categoryService.updateCategory(id, categoryDto));
 
     return ResponseEntity.ok(category);
   }
