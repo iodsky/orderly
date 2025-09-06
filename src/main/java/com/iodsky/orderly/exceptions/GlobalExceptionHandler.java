@@ -49,4 +49,10 @@ public class GlobalExceptionHandler {
     return new ResponseEntity<>(error, HttpStatus.CONFLICT);
   }
 
+  @ExceptionHandler(ResourceInUseException.class)
+  public ResponseEntity<ErrorResponse> handleResourceInUserException(ResourceInUseException ex) {
+    ErrorResponse error = new ErrorResponse(LocalDateTime.now(), 400, ex.getMessage(), null);
+    return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+  }
+
 }
