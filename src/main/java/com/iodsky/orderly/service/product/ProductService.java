@@ -34,15 +34,8 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public Product getProductEntity(UUID id) {
+    public Product getProduct(UUID id) {
         return productRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Product not found for id " + id));
-    }
-
-    @Override
-    public Product getProductDto(UUID id) {
-        return productRepository
-                .findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found for id " + id));
     }
 

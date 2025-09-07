@@ -38,7 +38,7 @@ public class ImageService implements IImageService {
 
   @Override
   public List<Image> saveImage(List<MultipartFile> files, UUID productId) {
-    Product product = productService.getProductEntity(productId);
+    Product product = productService.getProduct(productId);
 
     List<Image> savedImages = new ArrayList<>();
     try {
