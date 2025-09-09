@@ -3,6 +3,7 @@ package com.iodsky.orderly.service.image;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,21 +24,21 @@ public class ImageService implements IImageService {
   private final ProductService productService;
 
   @Override
-  public Image getImageById(Long id) {
+  public Image getImageById(UUID id) {
     return imageRepository.findById(id)
         .orElseThrow(() -> new ResourceNotFoundException("Image not found for id " + id));
   }
 
   @Override
-  public void deleteImageById(Long id) {
+  public void deleteImageById(UUID id) {
     imageRepository.findById(id).ifPresentOrElse(imageRepository::delete, () -> {
       throw new ResourceNotFoundException("Image not found for id " + id);
     });
   }
 
   @Override
-  public List<Image> saveImage(List<MultipartFile> files, Long productId) {
-    Product product = productService.getProductEntity(productId);
+  public List<Image> saveImage(List<MultipartFile> files, UUID productId) {
+    Product product = productService.getProduct(productId);
 
     List<Image> savedImages = new ArrayList<>();
     try {
@@ -59,7 +60,7 @@ public class ImageService implements IImageService {
   }
 
   @Override
-  public Image updateImage(MultipartFile file, Long imageId) {
+  public Image updateImage(MultipartFile file, UUID imageId) {
     Image existingImage = imageRepository.findById(imageId)
         .orElseThrow(() -> new ResourceNotFoundException("Image not found for id " + imageId));
 

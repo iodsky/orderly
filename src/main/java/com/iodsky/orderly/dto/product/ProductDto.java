@@ -5,13 +5,14 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 import com.iodsky.orderly.dto.image.ImageDto;
 
 @Data
 @Builder
 public class ProductDto {
-    private long id;
+    private UUID id;
     private String name;
     private String description;
     private String brand;

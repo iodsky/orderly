@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,31 +28,32 @@ import org.springframework.web.bind.annotation.RequestBody;
 public class CategoryController {
 
   private final CategoryService categoryService;
+  private final CategoryMapper categoryMapper;
 
   @PostMapping
   public ResponseEntity<CategoryDto> createCategory(@Valid() @RequestBody CategoryDto categoryDto) {
-    CategoryDto category = CategoryMapper.toDto(categoryService.addCategory(categoryDto));
+    CategoryDto category = categoryMapper.toDto(categoryService.addCategory(categoryDto));
 
     return new ResponseEntity<>(category, HttpStatus.CREATED);
   }
 
   @GetMapping
   public ResponseEntity<List<CategoryDto>> getCategories() {
-    List<CategoryDto> categories = categoryService.getAllCategories().stream().map(CategoryMapper::toDto).toList();
+    List<CategoryDto> categories = categoryService.getAllCategories().stream().map(categoryMapper::toDto).toList();
 
     return ResponseEntity.ok(categories);
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<CategoryDto> updateCategory(@PathVariable() Long id,
+  public ResponseEntity<CategoryDto> updateCategory(@PathVariable() UUID id,
       @Valid() @RequestBody() CategoryDto categoryDto) {
-    CategoryDto category = CategoryMapper.toDto(categoryService.updateCategory(id, categoryDto));
+    CategoryDto category = categoryMapper.toDto(categoryService.updateCategory(id, categoryDto));
 
     return ResponseEntity.ok(category);
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<String> deleteProduct(@PathVariable() Long id) {
+  public ResponseEntity<String> deleteProduct(@PathVariable() UUID id) {
     categoryService.deleteCategoryById(id);
     return ResponseEntity.ok("Category deleted successfully");
   }

@@ -1,6 +1,7 @@
 package com.iodsky.orderly.controller;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,11 +31,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 public class ProductController {
 
   private final ProductService productService;
+  private final ProductMapper productMapper;
 
   @PostMapping
   public ResponseEntity<ProductDto> createProduct(@Valid() @RequestBody() ProductRequestDto productRequestDto) {
     Product product = productService.addProduct(productRequestDto);
-    return new ResponseEntity<>(ProductMapper.toDto(product), HttpStatus.CREATED);
+    return new ResponseEntity<>(productMapper.toDto(product), HttpStatus.CREATED);
   }
 
   @GetMapping
@@ -44,25 +46,25 @@ public class ProductController {
       @RequestParam(required = false) String name) {
 
     List<ProductDto> products = productService.getProducts(name, category, brand).stream()
-        .map(ProductMapper::toDto).toList();
+        .map(productMapper::toDto).toList();
     return ResponseEntity.ok(products);
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<ProductDto> getProductById(@PathVariable Long id) {
-    Product product = productService.getProductDto(id);
-    return ResponseEntity.ok(ProductMapper.toDto(product));
+  public ResponseEntity<ProductDto> getProductById(@PathVariable UUID id) {
+    Product product = productService.getProduct(id);
+    return ResponseEntity.ok(productMapper.toDto(product));
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<ProductDto> updateProduct(@PathVariable Long id,
+  public ResponseEntity<ProductDto> updateProduct(@PathVariable UUID id,
       @Valid() @RequestBody() ProductRequestDto productRequestDto) {
     Product product = productService.updateProduct(id, productRequestDto);
-    return ResponseEntity.ok(ProductMapper.toDto(product));
+    return ResponseEntity.ok(productMapper.toDto(product));
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<String> deleteProduct(@PathVariable Long id) {
+  public ResponseEntity<String> deleteProduct(@PathVariable UUID id) {
     productService.deleteProductById(id);
     return ResponseEntity.ok("Product deleted successfully");
   }

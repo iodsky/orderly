@@ -55,4 +55,10 @@ public class GlobalExceptionHandler {
     return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
   }
 
+  @ExceptionHandler(Exception.class)
+  public ResponseEntity<ErrorResponse> handleAllExceptions(Exception ex) {
+    ErrorResponse error = new ErrorResponse(LocalDateTime.now(), 500, "Internal Server Error", null);
+    return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+  }
+
 }

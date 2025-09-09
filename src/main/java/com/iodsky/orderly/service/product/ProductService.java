@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +19,7 @@ public class ProductService implements IProductService {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private final ProductMapper productMapper;
 
     @Override
     public Product addProduct(ProductRequestDto productRequestDto) {
@@ -25,34 +27,27 @@ public class ProductService implements IProductService {
                 .orElseGet(() -> categoryRepository
                         .save(Category.builder().name(productRequestDto.getCategory()).build()));
 
-        Product product = ProductMapper.toEntity(productRequestDto);
+        Product product = productMapper.toEntity(productRequestDto);
         product.setCategory(category);
 
         return productRepository.save(product);
     }
 
     @Override
-    public Product getProductEntity(Long id) {
+    public Product getProduct(UUID id) {
         return productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found for id " + id));
     }
 
     @Override
-    public Product getProductDto(Long id) {
-        return productRepository
-                .findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Product not found for id " + id));
-    }
-
-    @Override
-    public void deleteProductById(Long id) {
+    public void deleteProductById(UUID id) {
         productRepository.findById(id).ifPresentOrElse(productRepository::delete, () -> {
             throw new ResourceNotFoundException("Product not found for id " + id);
         });
     }
 
     @Override
-    public Product updateProduct(Long id, ProductRequestDto productRequestDto) {
+    public Product updateProduct(UUID id, ProductRequestDto productRequestDto) {
         Product existingProduct = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found for id " + id));
 

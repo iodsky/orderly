@@ -4,17 +4,16 @@ import com.iodsky.orderly.dto.product.ProductRequestDto;
 import com.iodsky.orderly.model.Product;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface IProductService {
     Product addProduct(ProductRequestDto productRequestDto);
 
-    Product getProductEntity(Long id);
+    Product getProduct(UUID id);
 
-    Product getProductDto(Long id);
+    void deleteProductById(UUID id);
 
-    void deleteProductById(Long id);
-
-    Product updateProduct(Long productId, ProductRequestDto productRequestDto);
+    Product updateProduct(UUID productId, ProductRequestDto productRequestDto);
 
     List<Product> getProducts(String name, String category, String brand);
 

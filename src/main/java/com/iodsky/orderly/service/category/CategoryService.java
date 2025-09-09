@@ -1,6 +1,7 @@
 package com.iodsky.orderly.service.category;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -20,11 +21,12 @@ import lombok.RequiredArgsConstructor;
 public class CategoryService implements ICategoryService {
 
   private final CategoryRepository categoryRepository;
+  private final CategoryMapper categoryMapper;
 
   @Override
   public Category addCategory(CategoryDto categoryDto) {
     try {
-      Category category = CategoryMapper.toEntity(categoryDto);
+      Category category = categoryMapper.toEntity(categoryDto);
 
       return categoryRepository.save(category);
 
@@ -35,7 +37,7 @@ public class CategoryService implements ICategoryService {
   }
 
   @Override
-  public Category getCategoryById(Long id) {
+  public Category getCategoryById(UUID id) {
     Category category = categoryRepository.findById(id)
         .orElseThrow(() -> new ResourceNotFoundException("Category not found for id: " + id));
     return category;
@@ -47,7 +49,7 @@ public class CategoryService implements ICategoryService {
   }
 
   @Override
-  public Category updateCategory(Long id, CategoryDto categoryDto) {
+  public Category updateCategory(UUID id, CategoryDto categoryDto) {
     try {
       Category existing = categoryRepository.findById(id)
           .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
@@ -62,7 +64,7 @@ public class CategoryService implements ICategoryService {
   }
 
   @Override
-  public void deleteCategoryById(Long id) {
+  public void deleteCategoryById(UUID id) {
     try {
       categoryRepository.findById(id).ifPresentOrElse(categoryRepository::delete,
           () -> {

@@ -8,7 +8,7 @@ import com.iodsky.orderly.model.Category;
 @Component
 public class CategoryMapper {
 
-  public static CategoryDto toDto(Category category) {
+  public CategoryDto toDto(Category category) {
     if (category == null) {
       return null;
     }
@@ -19,7 +19,7 @@ public class CategoryMapper {
         .build();
   }
 
-  public static Category toEntity(CategoryDto dto) {
+  public Category toEntity(CategoryDto dto) {
     if (dto == null) {
       return null;
     }

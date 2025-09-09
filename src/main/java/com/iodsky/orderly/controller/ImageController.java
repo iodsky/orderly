@@ -1,6 +1,7 @@
 package com.iodsky.orderly.controller;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
@@ -30,19 +31,20 @@ import lombok.RequiredArgsConstructor;
 public class ImageController {
 
   private final ImageService imageService;
+  private final ImageMapper imageMapper;
 
   @PostMapping()
   public ResponseEntity<List<ImageDto>> uploadImage(
       @RequestParam() List<MultipartFile> images,
-      @RequestParam() Long productId) {
+      @RequestParam() UUID productId) {
     List<ImageDto> savedImages = imageService.saveImage(images, productId).stream()
-        .map(ImageMapper::toDto)
+        .map(imageMapper::toDto)
         .toList();
     return new ResponseEntity<>(savedImages, HttpStatus.CREATED);
   }
 
   @GetMapping("{id}")
-  public ResponseEntity<ByteArrayResource> getImageById(@PathVariable() Long id) {
+  public ResponseEntity<ByteArrayResource> getImageById(@PathVariable() UUID id) {
     Image image = imageService.getImageById(id);
     return ResponseEntity.ok().contentType(MediaType.parseMediaType(image.getFileType()))
         .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + image.getFileName() + "\"")
@@ -50,13 +52,13 @@ public class ImageController {
   }
 
   @PutMapping("{id}")
-  public ResponseEntity<ImageDto> updateImage(@PathVariable() Long id, @RequestParam() MultipartFile image) {
-    ImageDto updatedImage = ImageMapper.toDto(imageService.updateImage(image, id));
+  public ResponseEntity<ImageDto> updateImage(@PathVariable() UUID id, @RequestParam() MultipartFile image) {
+    ImageDto updatedImage = imageMapper.toDto(imageService.updateImage(image, id));
     return ResponseEntity.ok(updatedImage);
   }
 
   @DeleteMapping("{id}")
-  public ResponseEntity<String> deleteImage(@PathVariable() Long id) {
+  public ResponseEntity<String> deleteImage(@PathVariable() UUID id) {
     imageService.deleteImageById(id);
     return ResponseEntity.ok("Image " + id + " deleted successfully");
   }
