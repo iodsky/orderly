@@ -9,7 +9,6 @@ import com.iodsky.orderly.model.Cart;
 import com.iodsky.orderly.model.CartItem;
 import com.iodsky.orderly.model.Product;
 import com.iodsky.orderly.repository.CartItemRepository;
-import com.iodsky.orderly.repository.CartRepository;
 import com.iodsky.orderly.service.cart.ICartService;
 import com.iodsky.orderly.service.product.IProductService;
 
@@ -20,13 +19,12 @@ import lombok.RequiredArgsConstructor;
 public class CartItemService implements ICartItemService {
 
   private final CartItemRepository cartItemRepository;
-  private final CartRepository cartRepository;
   private final ICartService cartService;
   private final IProductService productService;
 
   @Override
   public CartItem getCartItem(UUID cartId, UUID productId) {
-    return cartService.getCart(productId).getItems().stream().filter(i -> i.getProduct().getId().equals(productId))
+    return cartService.getCart(cartId).getItems().stream().filter(i -> i.getProduct().getId().equals(productId))
         .findFirst().orElseThrow(() -> new ResourceNotFoundException("Cart item not found for id " + productId));
   }
 
@@ -34,9 +32,8 @@ public class CartItemService implements ICartItemService {
   public CartItem addItemToCart(UUID cartId, UUID productId, int quantity) {
     // Get cart
     Cart cart = (cartId == null)
-        ? cartRepository.save(new Cart())
-        : cartRepository.findById(cartId)
-            .orElseThrow(() -> new ResourceNotFoundException("Cart not found for id " + cartId));
+        ? cartService.saveCart(new Cart())
+        : cartService.getCart(cartId);
     // Get product
     Product product = productService.getProduct(productId);
 
@@ -57,7 +54,7 @@ public class CartItemService implements ICartItemService {
 
     cart.addItem(cartItem);
     CartItem item = cartItemRepository.save(cartItem);
-    cartRepository.save(cart);
+    cartService.saveCart(cart);
 
     return item;
   }
@@ -70,7 +67,7 @@ public class CartItemService implements ICartItemService {
         .findFirst()
         .orElseThrow(() -> new ResourceNotFoundException("Cart item not found for product id " + productId));
     cart.removeItem(item);
-    cartRepository.save(cart);
+    cartService.saveCart(cart);
   }
 
   @Override
@@ -87,7 +84,7 @@ public class CartItemService implements ICartItemService {
       item.setQuantity(quantity);
     }
 
-    cartRepository.save(cart);
+    cartService.saveCart(cart);
     return item;
   }
 
