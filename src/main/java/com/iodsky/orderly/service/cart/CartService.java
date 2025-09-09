@@ -17,6 +17,11 @@ public class CartService implements ICartService {
   private final CartRepository cartRepository;
 
   @Override
+  public Cart saveCart(Cart cart) {
+    return cartRepository.save(cart);
+  }
+
+  @Override
   public Cart getCart(UUID id) {
     return cartRepository.findById(id)
         .orElseThrow(() -> new ResourceNotFoundException("Cart not found for Id " + id));
