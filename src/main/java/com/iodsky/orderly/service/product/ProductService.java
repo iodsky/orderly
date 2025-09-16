@@ -2,12 +2,14 @@ package com.iodsky.orderly.service.product;
 
 import com.iodsky.orderly.dto.mapper.ProductMapper;
 import com.iodsky.orderly.dto.product.ProductRequestDto;
+import com.iodsky.orderly.exceptions.ResourceInUseException;
 import com.iodsky.orderly.exceptions.ResourceNotFoundException;
 import com.iodsky.orderly.model.Category;
 import com.iodsky.orderly.model.Product;
 import com.iodsky.orderly.repository.CategoryRepository;
 import com.iodsky.orderly.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -41,9 +43,13 @@ public class ProductService implements IProductService {
 
     @Override
     public void deleteProductById(UUID id) {
+        try {
         productRepository.findById(id).ifPresentOrElse(productRepository::delete, () -> {
             throw new ResourceNotFoundException("Product not found for id " + id);
         });
+        } catch (DataIntegrityViolationException ex) {
+            throw new ResourceInUseException("Cannot delete product " + id + " because it has associated order/s");
+        }
     }
 
     @Override
