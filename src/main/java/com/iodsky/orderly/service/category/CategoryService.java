@@ -38,9 +38,8 @@ public class CategoryService implements ICategoryService {
 
   @Override
   public Category getCategoryById(UUID id) {
-    Category category = categoryRepository.findById(id)
+      return categoryRepository.findById(id)
         .orElseThrow(() -> new ResourceNotFoundException("Category not found for id: " + id));
-    return category;
   }
 
   @Override
