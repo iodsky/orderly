@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: orderly
+  datasource:
+    url: ""
+    username: ""
+    password: ""
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+server:
+  port: 8000
+  servlet:
+    context-path: /api
