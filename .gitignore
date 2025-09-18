@@ -10,9 +10,14 @@ out/
 # --- VS Code ---
 .vscode/
 
+# --- IntelliJ ---
+.idea/
+orderly.iml
+
 # --- Spring Boot specific ---
 # Embedded Tomcat / Jetty / etc.
 .spring-boot-devtools.pr
+src/main/resources/application.yml
 
 # --- API client ---
 client/
