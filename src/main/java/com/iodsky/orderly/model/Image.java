@@ -7,6 +7,7 @@ import lombok.Data;
 
 @Data
 @Entity
+@Table(name = "images")
 public class Image {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
