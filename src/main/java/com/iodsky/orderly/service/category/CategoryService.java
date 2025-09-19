@@ -3,12 +3,12 @@ package com.iodsky.orderly.service.category;
 import java.util.List;
 import java.util.UUID;
 
+import com.iodsky.orderly.exceptions.DuplicateResourceException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import com.iodsky.orderly.dto.category.CategoryDto;
 import com.iodsky.orderly.dto.mapper.CategoryMapper;
-import com.iodsky.orderly.exceptions.DupilcateResoruceException;
 import com.iodsky.orderly.exceptions.ResourceInUseException;
 import com.iodsky.orderly.exceptions.ResourceNotFoundException;
 import com.iodsky.orderly.model.Category;
@@ -31,7 +31,7 @@ public class CategoryService implements ICategoryService {
       return categoryRepository.save(category);
 
     } catch (DataIntegrityViolationException ex) {
-      throw new DupilcateResoruceException("Category " + categoryDto.getName() + " already exists.");
+      throw new DuplicateResourceException("Category " + categoryDto.getName() + " already exists.");
     }
 
   }
@@ -58,7 +58,7 @@ public class CategoryService implements ICategoryService {
       return categoryRepository.save(existing);
 
     } catch (DataIntegrityViolationException ex) {
-      throw new DupilcateResoruceException("Category " + categoryDto.getName() + " already exists.");
+      throw new DuplicateResourceException("Category " + categoryDto.getName() + " already exists.");
     }
   }
 
