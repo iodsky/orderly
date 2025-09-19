@@ -19,4 +19,6 @@ public interface IProductService {
 
     Long getProductsCountByBrandAndName(String brand, String name);
 
+    Product decreaseStock(UUID id, int quanity);
+
 }

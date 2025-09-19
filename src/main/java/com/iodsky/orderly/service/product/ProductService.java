@@ -2,6 +2,7 @@ package com.iodsky.orderly.service.product;
 
 import com.iodsky.orderly.dto.mapper.ProductMapper;
 import com.iodsky.orderly.dto.product.ProductRequestDto;
+import com.iodsky.orderly.exceptions.ProductOutOfStockException;
 import com.iodsky.orderly.exceptions.ResourceInUseException;
 import com.iodsky.orderly.exceptions.ResourceNotFoundException;
 import com.iodsky.orderly.model.Category;
@@ -44,9 +45,9 @@ public class ProductService implements IProductService {
     @Override
     public void deleteProductById(UUID id) {
         try {
-        productRepository.findById(id).ifPresentOrElse(productRepository::delete, () -> {
-            throw new ResourceNotFoundException("Product not found for id " + id);
-        });
+            productRepository.findById(id).ifPresentOrElse(productRepository::delete, () -> {
+                throw new ResourceNotFoundException("Product not found for id " + id);
+            });
         } catch (DataIntegrityViolationException ex) {
             throw new ResourceInUseException("Cannot delete product " + id + " because it has associated order/s");
         }
@@ -96,5 +97,17 @@ public class ProductService implements IProductService {
     @Override
     public Long getProductsCountByBrandAndName(String brand, String name) {
         return productRepository.countByBrandAndName(brand, name);
+    }
+
+    @Override
+    public Product decreaseStock(UUID id, int quanity) {
+        Product product = getProduct(id);
+
+        if (product.getStock() < quanity) {
+            throw new ProductOutOfStockException(product.getId());
+        }
+
+        product.setStock(product.getStock() - quanity);
+        return productRepository.save(product);
     }
 }

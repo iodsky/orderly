@@ -2,15 +2,14 @@ package com.iodsky.orderly.service.checkout;
 
 import com.iodsky.orderly.enums.OrderStatus;
 import com.iodsky.orderly.exceptions.EmptyCartException;
-import com.iodsky.orderly.exceptions.ProductOutOfStockException;
 import com.iodsky.orderly.model.Cart;
 import com.iodsky.orderly.model.Order;
 import com.iodsky.orderly.model.OrderItem;
 import com.iodsky.orderly.model.Product;
 import com.iodsky.orderly.model.User;
-import com.iodsky.orderly.repository.ProductRepository;
 import com.iodsky.orderly.service.cart.CartService;
 import com.iodsky.orderly.service.order.OrderService;
+import com.iodsky.orderly.service.product.ProductService;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,7 +24,7 @@ public class CheckoutService implements ICheckoutService {
 
     private final OrderService orderService;
     private final CartService cartService;
-    private final ProductRepository productRepository;
+    private final ProductService productService;
 
     @Override
     @Transactional
@@ -45,14 +44,8 @@ public class CheckoutService implements ICheckoutService {
                 .build();
 
         cart.getItems().forEach(item -> {
-            Product product = item.getProduct();
 
-            if (product.getStock() < item.getQuantity()) {
-                throw new ProductOutOfStockException(product.getId());
-            }
-
-            product.setStock(product.getStock() - item.getQuantity());
-            productRepository.save(product);
+            Product product = productService.decreaseStock(item.getProduct().getId(), item.getQuantity());
 
             OrderItem orderItem = OrderItem.builder()
                     .order(order)
