@@ -26,6 +26,10 @@ public class Order {
   @GeneratedValue(strategy = GenerationType.UUID)
   private UUID id;
 
+  @ManyToOne
+  @JoinColumn(name = "user_id")
+  private User user;
+
   private LocalDateTime dateOrdered;
   private BigDecimal totalAmount;
 
