@@ -43,8 +43,8 @@ public class GlobalExceptionHandler {
     return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
   }
 
-  @ExceptionHandler(DupilcateResoruceException.class)
-  public ResponseEntity<ErrorResponse> handleDuplicateResourceException(DupilcateResoruceException ex) {
+  @ExceptionHandler(DuplicateResourceException.class)
+  public ResponseEntity<ErrorResponse> handleDuplicateResourceException(DuplicateResourceException ex) {
     ErrorResponse error = new ErrorResponse(LocalDateTime.now(), 409, ex.getMessage(), null);
     return new ResponseEntity<>(error, HttpStatus.CONFLICT);
   }
