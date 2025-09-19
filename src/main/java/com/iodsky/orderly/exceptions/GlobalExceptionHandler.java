@@ -68,7 +68,7 @@ public class GlobalExceptionHandler {
   }
 
   @ExceptionHandler(Exception.class)
-  public ResponseEntity<ErrorResponse> handleAllExceptions(Exception ex) {
+  public ResponseEntity<ErrorResponse> handleAllExceptions() {
     ErrorResponse error = new ErrorResponse(LocalDateTime.now(), 500, "Internal Server Error", null);
     return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
   }
