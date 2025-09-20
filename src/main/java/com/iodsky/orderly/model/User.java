@@ -3,20 +3,39 @@ package com.iodsky.orderly.model;
 import java.util.*;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
-@Data
+/*
+    🔒 UserDetails and Spring Security
+    ---------------------------------
+    - By implementing `UserDetails`, this entity becomes Spring Security's internal
+      representation of an authenticated user.
+    - When a user tries to log in:
+         1. Spring Security calls our `CustomUserDetailsService`.
+         2. That service loads a `User` from the database.
+         3. Spring Security then uses the `UserDetails` methods to validate credentials.
+    - Key methods:
+         • getUsername()  → the unique identifier used for login
+         • getPassword()  → the (hashed) password used for authentication
+         • getAuthorities() → roles/permissions (currently empty, will be extended later)
+    - This allows Spring Security to handle authentication and authorization
+      without caring about our actual database schema.
+ */
+
+
 @Entity
+@Getter
+@Setter
+@ToString(exclude = "password")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Table(name = "users")
-public class User {
+public class User implements UserDetails {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
   private UUID id;
@@ -46,4 +65,18 @@ public class User {
   @Builder.Default()
   private List<Order> orders = new ArrayList<>();
 
+  @Override
+  public Collection<? extends GrantedAuthority> getAuthorities() {
+    return List.of();
+  }
+
+  @Override
+  public String getPassword() {
+    return password;
+  }
+
+  @Override
+  public String getUsername() {
+    return username;
+  }
 }
