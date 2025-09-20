@@ -1,4 +1,4 @@
-package com.iodsky.orderly.service;
+package com.iodsky.orderly.service.user;
 
 import com.iodsky.orderly.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
