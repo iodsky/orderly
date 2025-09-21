@@ -33,13 +33,16 @@ public class Cart {
   private UUID id;
 
   @OneToOne
-  @JoinColumn(name = "user_id")
+  @JoinColumn(name = "user_id", nullable = false, unique = true)
   private User user;
 
   @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
-  @Builder.Default
   @EqualsAndHashCode.Exclude
   private Set<CartItem> items = new HashSet<>();
+
+  public Cart(User user) {
+    this.user=user;
+  }
 
   @Transient
   public BigDecimal getTotalAmount() {
