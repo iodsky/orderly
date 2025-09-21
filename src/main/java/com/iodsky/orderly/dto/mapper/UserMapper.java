@@ -8,7 +8,6 @@ import com.iodsky.orderly.model.Role;
 import com.iodsky.orderly.model.User;
 import com.iodsky.orderly.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 
@@ -17,7 +16,6 @@ import org.springframework.stereotype.Component;
 public class UserMapper {
 
     private final RoleRepository roleRepository;
-    private final PasswordEncoder passwordEncoder;
 
     public UserDto toDto(User user) {
         return UserDto.builder()
@@ -39,7 +37,7 @@ public class UserMapper {
                 .lastName(dto.getLastName())
                 .username(dto.getUsername())
                 .email(dto.getEmail())
-                .password(passwordEncoder.encode(dto.getPassword()))
+                .password(dto.getPassword())
                 .role(role)
                 .build();
     }
