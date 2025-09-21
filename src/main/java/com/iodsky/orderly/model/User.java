@@ -7,6 +7,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 /*
@@ -21,11 +22,10 @@ import org.springframework.security.core.userdetails.UserDetails;
     - Key methods:
          • getUsername()  → the unique identifier used for login
          • getPassword()  → the (hashed) password used for authentication
-         • getAuthorities() → roles/permissions (currently empty, will be extended later)
+         • getAuthorities() → roles/permissions
     - This allows Spring Security to handle authentication and authorization
       without caring about our actual database schema.
  */
-
 
 @Entity
 @Getter
@@ -36,20 +36,30 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Builder
 @Table(name = "users")
 public class User implements UserDetails {
+
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
   private UUID id;
 
   @Column(nullable = false)
   private String firstName;
+
   @Column(nullable = false)
   private String lastName;
+
   @Column(unique = true, nullable = false)
   private String email;
+
   @Column(unique = true, nullable = false)
   private String username;
+
   @Column(nullable = false)
   private String password;
+
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name="role_id")
+  private Role role;
+
   @CreationTimestamp
   @Column(updatable = false, name = "created_at")
   private Date createdAt;
@@ -67,7 +77,7 @@ public class User implements UserDetails {
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
-    return List.of();
+    return List.of(new SimpleGrantedAuthority("ROLE_" + role.getRole()));
   }
 
   @Override
