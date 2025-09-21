@@ -3,14 +3,16 @@ package com.iodsky.orderly.service.cartItem;
 import java.util.UUID;
 
 import com.iodsky.orderly.model.CartItem;
+import com.iodsky.orderly.model.User;
 
 public interface ICartItemService {
 
-  CartItem getCartItem(UUID cartId, UUID productId);
+  CartItem addItemToCart(UUID cartId, UUID productId, int quantity, User user);
 
-  CartItem addItemToCart(UUID cartId, UUID productId, int quantity);
+  CartItem getCartItem(UUID cartId, UUID productId, User user);
 
-  void removeItemFromCart(UUID cartId, UUID productId);
+  CartItem updateItemQuantity(UUID cartId, UUID productId, int quantity, User user);
 
-  CartItem updateItemQuantity(UUID cartId, UUID productId, int quantity);
+  void removeItemFromCart(UUID cartId, UUID productId, User user);
+
 }

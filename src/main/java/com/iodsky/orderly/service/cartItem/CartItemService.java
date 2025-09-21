@@ -2,6 +2,7 @@ package com.iodsky.orderly.service.cartItem;
 
 import java.util.UUID;
 
+import com.iodsky.orderly.model.User;
 import org.springframework.stereotype.Service;
 
 import com.iodsky.orderly.exceptions.ResourceNotFoundException;
@@ -23,17 +24,17 @@ public class CartItemService implements ICartItemService {
   private final IProductService productService;
 
   @Override
-  public CartItem getCartItem(UUID cartId, UUID productId) {
-    return cartService.getCart(cartId).getItems().stream().filter(i -> i.getProduct().getId().equals(productId))
+  public CartItem getCartItem(UUID cartId, UUID productId, User user) {
+    return cartService.getCart(cartId, user).getItems().stream().filter(i -> i.getProduct().getId().equals(productId))
         .findFirst().orElseThrow(() -> new ResourceNotFoundException("Cart item not found for id " + productId));
   }
 
   @Override
-  public CartItem addItemToCart(UUID cartId, UUID productId, int quantity) {
+  public CartItem addItemToCart(UUID cartId, UUID productId, int quantity, User user) {
     // Get cart
     Cart cart = (cartId == null)
-        ? cartService.saveCart(new Cart())
-        : cartService.getCart(cartId);
+        ? cartService.saveCart(new Cart(user))
+        : cartService.getCart(cartId, user);
     // Get product
     Product product = productService.getProduct(productId);
 
@@ -42,7 +43,7 @@ public class CartItemService implements ICartItemService {
         .filter(i -> i.getProduct().getId().equals(product.getId()))
         .findFirst()
         .orElse(new CartItem());
-    // If product does not exists create new cart item else increase quantity
+    // If product does not exist create new cart item else increase quantity
     if (cartItem.getId() == null) {
       cartItem.setCart(cart);
       cartItem.setProduct(product);
@@ -60,8 +61,8 @@ public class CartItemService implements ICartItemService {
   }
 
   @Override
-  public void removeItemFromCart(UUID cartId, UUID productId) {
-    Cart cart = cartService.getCart(cartId);
+  public void removeItemFromCart(UUID cartId, UUID productId, User user) {
+    Cart cart = cartService.getCart(cartId, user);
     CartItem item = cart.getItems().stream()
         .filter(i -> i.getProduct().getId().equals(productId))
         .findFirst()
@@ -71,8 +72,8 @@ public class CartItemService implements ICartItemService {
   }
 
   @Override
-  public CartItem updateItemQuantity(UUID cartId, UUID productId, int quantity) {
-    Cart cart = cartService.getCart(cartId);
+  public CartItem updateItemQuantity(UUID cartId, UUID productId, int quantity, User user) {
+    Cart cart = cartService.getCart(cartId, user);
     CartItem item = cart.getItems().stream()
         .filter(i -> i.getProduct().getId().equals(productId)).findFirst()
         .orElseThrow(() -> new ResourceNotFoundException("Cart item not found for product id " + productId));

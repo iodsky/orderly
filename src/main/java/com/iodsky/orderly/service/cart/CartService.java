@@ -2,6 +2,8 @@ package com.iodsky.orderly.service.cart;
 
 import java.util.UUID;
 
+import com.iodsky.orderly.model.User;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import com.iodsky.orderly.exceptions.ResourceNotFoundException;
@@ -22,14 +24,25 @@ public class CartService implements ICartService {
   }
 
   @Override
-  public Cart getCart(UUID id) {
-    return cartRepository.findById(id)
-        .orElseThrow(() -> new ResourceNotFoundException("Cart not found for Id " + id));
+  public Cart getCart(UUID id, User user) {
+    Cart cart = cartRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Cart not found for Id " + id));
+
+    if (!cart.getUser().getId().equals(user.getId())) {
+      throw new AccessDeniedException("You cannot access another user's cart");
+    }
+
+    return cart;
   }
 
   @Override
-  public Cart clearCart(UUID id) {
-    Cart cart = getCart(id);
+  public Cart clearCart(UUID id, User user) {
+    Cart cart = getCart(id, user);
+
+    if (!cart.getUser().getId().equals(user.getId())) {
+      throw new AccessDeniedException("You cannot access another user's cart");
+    }
+
     cart.getItems().clear();
     return cartRepository.save(cart);
   }

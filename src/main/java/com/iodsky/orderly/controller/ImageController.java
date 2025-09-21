@@ -8,6 +8,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,6 +35,7 @@ public class ImageController {
   private final ImageMapper imageMapper;
 
   @PostMapping()
+  @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<List<ImageDto>> uploadImage(
       @RequestParam() List<MultipartFile> images,
       @RequestParam() UUID productId) {
@@ -52,12 +54,14 @@ public class ImageController {
   }
 
   @PutMapping("{id}")
+  @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<ImageDto> updateImage(@PathVariable() UUID id, @RequestParam() MultipartFile image) {
     ImageDto updatedImage = imageMapper.toDto(imageService.updateImage(image, id));
     return ResponseEntity.ok(updatedImage);
   }
 
   @DeleteMapping("{id}")
+  @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<String> deleteImage(@PathVariable() UUID id) {
     imageService.deleteImageById(id);
     return ResponseEntity.ok("Image " + id + " deleted successfully");

@@ -28,9 +28,8 @@ public class CheckoutService implements ICheckoutService {
 
     @Override
     @Transactional
-    public Order placeOrder(UUID cartId) {
-        Cart cart = cartService.getCart(cartId);
-        User user = cart.getUser();
+    public Order placeOrder(UUID cartId, User user) {
+        Cart cart = cartService.getCart(cartId, user);
 
         if (cart.getItems().isEmpty()) {
             throw new EmptyCartException(cartId);

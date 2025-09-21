@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,6 +35,7 @@ public class ProductController {
   private final ProductMapper productMapper;
 
   @PostMapping
+  @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<ProductDto> createProduct(@Valid() @RequestBody() ProductRequestDto productRequestDto) {
     Product product = productService.addProduct(productRequestDto);
     return new ResponseEntity<>(productMapper.toDto(product), HttpStatus.CREATED);
@@ -57,6 +59,7 @@ public class ProductController {
   }
 
   @PutMapping("/{id}")
+  @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<ProductDto> updateProduct(@PathVariable UUID id,
       @Valid() @RequestBody() ProductRequestDto productRequestDto) {
     Product product = productService.updateProduct(id, productRequestDto);
@@ -64,6 +67,7 @@ public class ProductController {
   }
 
   @DeleteMapping("/{id}")
+  @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<String> deleteProduct(@PathVariable UUID id) {
     productService.deleteProductById(id);
     return ResponseEntity.ok("Product deleted successfully");

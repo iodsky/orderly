@@ -2,7 +2,9 @@ package com.iodsky.orderly.controller;
 
 import java.util.UUID;
 
+import com.iodsky.orderly.model.User;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -25,14 +27,14 @@ public class CartController {
   private final CartMapper cartMapper;
 
   @GetMapping("{id}")
-  public ResponseEntity<CartDto> getCart(@PathVariable UUID id) {
-    Cart cart = cartService.getCart(id);
+  public ResponseEntity<CartDto> getCart(@PathVariable UUID id, @AuthenticationPrincipal User user) {
+    Cart cart = cartService.getCart(id, user);
     return ResponseEntity.ok(cartMapper.toDto(cart));
   }
 
   @PutMapping("{id}/clear")
-  public ResponseEntity<CartDto> clearCart(@PathVariable UUID id) {
-    Cart cart = cartService.clearCart(id);
+  public ResponseEntity<CartDto> clearCart(@PathVariable UUID id, @AuthenticationPrincipal User user) {
+    Cart cart = cartService.clearCart(id, user);
     return ResponseEntity.ok(cartMapper.toDto(cart));
   }
 

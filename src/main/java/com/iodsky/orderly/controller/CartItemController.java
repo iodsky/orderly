@@ -2,7 +2,9 @@ package com.iodsky.orderly.controller;
 
 import java.util.UUID;
 
+import com.iodsky.orderly.model.User;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,17 +33,19 @@ public class CartItemController {
   public ResponseEntity<CartItemDto> addItemToCart(
       @PathVariable UUID productId,
       @RequestParam(required = false) UUID cartId,
-      @RequestParam int quantity) {
+      @RequestParam int quantity,
+      @AuthenticationPrincipal User user) {
 
-    CartItem item = cartItemService.addItemToCart(cartId, productId, quantity);
+    CartItem item = cartItemService.addItemToCart(cartId, productId, quantity, user);
     return ResponseEntity.ok(cartItemMapper.toDto(item));
   }
 
   @GetMapping("/{productId}")
   public ResponseEntity<CartItemDto> getCartItem(
-      @PathVariable UUID cartId,
-      @PathVariable UUID productId) {
-    CartItem item = cartItemService.getCartItem(cartId, productId);
+      @RequestParam UUID cartId,
+      @PathVariable UUID productId,
+      @AuthenticationPrincipal User user) {
+    CartItem item = cartItemService.getCartItem(cartId, productId, user);
     return ResponseEntity.ok(cartItemMapper.toDto(item));
   }
 
@@ -49,14 +53,16 @@ public class CartItemController {
   public ResponseEntity<CartItemDto> updateItemQuantity(
       @PathVariable UUID productId,
       @RequestParam UUID cartId,
-      @RequestParam int quantity) {
-    CartItem item = cartItemService.updateItemQuantity(cartId, productId, quantity);
+      @RequestParam int quantity,
+      @AuthenticationPrincipal User user) {
+    CartItem item = cartItemService.updateItemQuantity(cartId, productId, quantity, user);
     return ResponseEntity.ok(cartItemMapper.toDto(item));
   }
 
   @DeleteMapping("/{productId}")
-  public ResponseEntity<String> removeItem(@RequestParam UUID cartId, @PathVariable UUID productId) {
-    cartItemService.removeItemFromCart(cartId, productId);
+  public ResponseEntity<String> removeItem(@RequestParam UUID cartId, @PathVariable UUID productId, @AuthenticationPrincipal User user) {
+    cartItemService.removeItemFromCart(cartId, productId, user);
     return ResponseEntity.ok("Item removed from cart");
   }
+
 }

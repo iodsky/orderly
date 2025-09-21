@@ -1,5 +1,6 @@
 package com.iodsky.orderly.controller;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -31,6 +32,7 @@ public class CategoryController {
   private final CategoryMapper categoryMapper;
 
   @PostMapping
+  @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<CategoryDto> createCategory(@Valid() @RequestBody CategoryDto categoryDto) {
     CategoryDto category = categoryMapper.toDto(categoryService.addCategory(categoryDto));
 
@@ -45,6 +47,7 @@ public class CategoryController {
   }
 
   @PutMapping("/{id}")
+  @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<CategoryDto> updateCategory(@PathVariable() UUID id,
       @Valid() @RequestBody() CategoryDto categoryDto) {
     CategoryDto category = categoryMapper.toDto(categoryService.updateCategory(id, categoryDto));
@@ -53,6 +56,7 @@ public class CategoryController {
   }
 
   @DeleteMapping("/{id}")
+  @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<String> deleteProduct(@PathVariable() UUID id) {
     categoryService.deleteCategoryById(id);
     return ResponseEntity.ok("Category deleted successfully");
