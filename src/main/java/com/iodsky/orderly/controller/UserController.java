@@ -23,10 +23,10 @@ public class UserController {
     private final UserMapper userMapper;
 
     @PostMapping()
-    public ResponseEntity<User> createUser(@Valid  @RequestBody AddUserDto dto) {
+    public ResponseEntity<UserDto> createUser(@Valid  @RequestBody AddUserDto dto) {
         User entity = userMapper.toEntity(dto);
         User user = userService.addUser(entity);
-        return new ResponseEntity<>(user, HttpStatus.CREATED);
+        return new ResponseEntity<>(userMapper.toDto(user), HttpStatus.CREATED);
     }
 
     @GetMapping()
