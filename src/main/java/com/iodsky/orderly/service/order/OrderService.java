@@ -3,7 +3,6 @@ package com.iodsky.orderly.service.order;
 import com.iodsky.orderly.enums.OrderStatus;
 import com.iodsky.orderly.exceptions.ResourceNotFoundException;
 import com.iodsky.orderly.model.Order;
-import com.iodsky.orderly.model.Role;
 import com.iodsky.orderly.model.User;
 import com.iodsky.orderly.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
