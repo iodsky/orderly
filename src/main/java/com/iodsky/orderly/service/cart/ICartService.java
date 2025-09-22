@@ -11,6 +11,8 @@ public interface ICartService {
 
   Cart getCart(UUID id, User user);
 
+  Cart getCartByUser(User user);
+
   Cart clearCart(UUID id, User user);
 
 }

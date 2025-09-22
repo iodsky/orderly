@@ -36,6 +36,11 @@ public class CartService implements ICartService {
   }
 
   @Override
+  public Cart getCartByUser(User user) {
+    return cartRepository.findByUserId(user.getId()).orElseGet(() -> saveCart(new Cart(user)));
+  }
+
+  @Override
   public Cart clearCart(UUID id, User user) {
     Cart cart = getCart(id, user);
 
