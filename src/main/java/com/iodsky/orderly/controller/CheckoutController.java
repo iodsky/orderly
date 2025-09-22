@@ -21,9 +21,9 @@ public class CheckoutController {
     private final CheckoutService checkoutService;
     private final OrderMapper orderMapper;
 
-    @PostMapping("{id}")
-    public ResponseEntity<OrderDto> checkoutOrder(@PathVariable UUID id, @AuthenticationPrincipal User user) {
-        Order order = checkoutService.placeOrder(id, user);
+    @PostMapping()
+    public ResponseEntity<OrderDto> checkoutOrder(@AuthenticationPrincipal User user) {
+        Order order = checkoutService.placeOrder(user);
 
         return new ResponseEntity<>(orderMapper.toDto(order), HttpStatus.CREATED);
     }
