@@ -7,7 +7,7 @@ import com.iodsky.orderly.model.User;
 
 public interface ICartItemService {
 
-  CartItem addItemToCart(UUID cartId, UUID productId, int quantity, User user);
+  CartItem addItemToCart(UUID productId, int quantity, User user);
 
   CartItem getCartItem(UUID cartId, UUID productId, User user);
 

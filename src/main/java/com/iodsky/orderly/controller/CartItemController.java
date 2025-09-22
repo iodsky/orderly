@@ -32,11 +32,10 @@ public class CartItemController {
   @PostMapping("/{productId}")
   public ResponseEntity<CartItemDto> addItemToCart(
       @PathVariable UUID productId,
-      @RequestParam(required = false) UUID cartId,
-      @RequestParam int quantity,
+      @RequestParam(required = false, defaultValue = "1") int quantity,
       @AuthenticationPrincipal User user) {
 
-    CartItem item = cartItemService.addItemToCart(cartId, productId, quantity, user);
+    CartItem item = cartItemService.addItemToCart(productId, quantity, user);
     return ResponseEntity.ok(cartItemMapper.toDto(item));
   }
 

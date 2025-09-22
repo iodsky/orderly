@@ -30,11 +30,9 @@ public class CartItemService implements ICartItemService {
   }
 
   @Override
-  public CartItem addItemToCart(UUID cartId, UUID productId, int quantity, User user) {
+  public CartItem addItemToCart(UUID productId, int quantity, User user) {
     // Get cart
-    Cart cart = (cartId == null)
-        ? cartService.saveCart(new Cart(user))
-        : cartService.getCart(cartId, user);
+    Cart cart = cartService.getCartByUser(user);
     // Get product
     Product product = productService.getProduct(productId);
 
@@ -47,7 +45,7 @@ public class CartItemService implements ICartItemService {
     if (cartItem.getId() == null) {
       cartItem.setCart(cart);
       cartItem.setProduct(product);
-      cartItem.setQuantity(quantity);
+      cartItem.setQuantity(quantity );
       cartItem.setUnitPrice(product.getPrice());
     } else {
       cartItem.setQuantity(cartItem.getQuantity() + quantity);
