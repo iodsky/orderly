@@ -2,7 +2,7 @@ package com.iodsky.orderly.dto.mapper;
 
 import org.springframework.stereotype.Component;
 
-import com.iodsky.orderly.dto.category.CategoryDto;
+import com.iodsky.orderly.dto.CategoryDto;
 import com.iodsky.orderly.model.Category;
 
 @Component

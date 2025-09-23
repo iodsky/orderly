@@ -2,7 +2,7 @@ package com.iodsky.orderly.dto.mapper;
 
 import com.iodsky.orderly.request.AddUserRequest;
 
-import com.iodsky.orderly.dto.user.UserDto;
+import com.iodsky.orderly.dto.UserDto;
 import com.iodsky.orderly.exception.ResourceNotFoundException;
 import com.iodsky.orderly.model.Role;
 import com.iodsky.orderly.model.User;

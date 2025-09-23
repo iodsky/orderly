@@ -3,7 +3,7 @@ package com.iodsky.orderly.dto.mapper;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.iodsky.orderly.dto.image.ImageDto;
+import com.iodsky.orderly.dto.ImageDto;
 import com.iodsky.orderly.model.Image;
 
 @Component

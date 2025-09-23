@@ -1,4 +1,4 @@
-package com.iodsky.orderly.dto.user;
+package com.iodsky.orderly.dto;
 
 import lombok.Builder;
 import lombok.Data;

@@ -1,4 +1,4 @@
-package com.iodsky.orderly.dto.order;
+package com.iodsky.orderly.dto;
 
 import com.iodsky.orderly.enums.OrderStatus;
 import lombok.Builder;

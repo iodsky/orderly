@@ -9,7 +9,7 @@ import jakarta.validation.constraints.Positive;
 import lombok.Data;
 
 @Data
-public class ProductRequest {
+public class AddProductRequest {
   @NotBlank(message = "Product name is required")
   private String name;
 

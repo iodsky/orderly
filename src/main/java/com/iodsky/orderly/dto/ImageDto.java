@@ -1,4 +1,4 @@
-package com.iodsky.orderly.dto.image;
+package com.iodsky.orderly.dto;
 
 import java.util.UUID;
 

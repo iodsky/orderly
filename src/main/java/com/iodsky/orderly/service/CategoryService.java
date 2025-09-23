@@ -7,7 +7,7 @@ import com.iodsky.orderly.exception.DuplicateResourceException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
-import com.iodsky.orderly.dto.category.CategoryDto;
+import com.iodsky.orderly.dto.CategoryDto;
 import com.iodsky.orderly.dto.mapper.CategoryMapper;
 import com.iodsky.orderly.exception.ResourceInUseException;
 import com.iodsky.orderly.exception.ResourceNotFoundException;

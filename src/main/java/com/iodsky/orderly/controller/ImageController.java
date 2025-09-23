@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.iodsky.orderly.dto.image.ImageDto;
+import com.iodsky.orderly.dto.ImageDto;
 import com.iodsky.orderly.dto.mapper.ImageMapper;
 import com.iodsky.orderly.model.Image;
 import com.iodsky.orderly.service.ImageService;

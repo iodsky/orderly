@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.iodsky.orderly.dto.mapper.ProductMapper;
-import com.iodsky.orderly.dto.product.ProductDto;
-import com.iodsky.orderly.request.ProductRequest;
+import com.iodsky.orderly.dto.ProductDto;
+import com.iodsky.orderly.request.AddProductRequest;
 import com.iodsky.orderly.model.Product;
 import com.iodsky.orderly.service.ProductService;
 
@@ -36,8 +36,8 @@ public class ProductController {
 
   @PostMapping
   @PreAuthorize("hasRole('ADMIN')")
-  public ResponseEntity<ProductDto> createProduct(@Valid() @RequestBody() ProductRequest productRequestDto) {
-    Product product = productService.addProduct(productRequestDto);
+  public ResponseEntity<ProductDto> createProduct(@Valid() @RequestBody() AddProductRequest request) {
+    Product product = productService.addProduct(request);
     return new ResponseEntity<>(productMapper.toDto(product), HttpStatus.CREATED);
   }
 
@@ -61,7 +61,7 @@ public class ProductController {
   @PutMapping("/{id}")
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<ProductDto> updateProduct(@PathVariable UUID id,
-      @Valid() @RequestBody() ProductRequest productRequestDto) {
+      @Valid() @RequestBody() AddProductRequest productRequestDto) {
     Product product = productService.updateProduct(id, productRequestDto);
     return ResponseEntity.ok(productMapper.toDto(product));
   }

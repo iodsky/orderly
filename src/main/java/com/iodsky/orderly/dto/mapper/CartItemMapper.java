@@ -2,7 +2,7 @@ package com.iodsky.orderly.dto.mapper;
 
 import org.springframework.stereotype.Component;
 
-import com.iodsky.orderly.dto.cart.CartItemDto;
+import com.iodsky.orderly.dto.CartItemDto;
 import com.iodsky.orderly.model.CartItem;
 
 @Component

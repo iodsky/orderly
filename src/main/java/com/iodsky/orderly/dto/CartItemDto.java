@@ -1,4 +1,4 @@
-package com.iodsky.orderly.dto.cart;
+package com.iodsky.orderly.dto;
 
 import java.math.BigDecimal;
 import java.util.UUID;
