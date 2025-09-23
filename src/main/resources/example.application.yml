@@ -18,3 +18,7 @@ server:
   port: 8000
   servlet:
     context-path: /api
+security:
+  jwt:
+    secret-key:
+    expiration-time:
