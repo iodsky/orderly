@@ -1,11 +1,10 @@
-package com.iodsky.orderly.dto.user;
+package com.iodsky.orderly.dto.auth;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import org.springframework.stereotype.Component;
 
 @Component
-
 @Data
 public class SignupDto {
     @NotBlank(message = "First name is required")
