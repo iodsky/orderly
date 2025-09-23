@@ -1,7 +1,9 @@
 package com.iodsky.orderly.service.user;
 
+import com.iodsky.orderly.dto.mapper.UserMapper;
 import com.iodsky.orderly.exceptions.DuplicateResourceException;
 import com.iodsky.orderly.model.User;
+import com.iodsky.orderly.repository.RoleRepository;
 import com.iodsky.orderly.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -58,4 +60,6 @@ public class UserService implements UserDetailsService {
             throw new DuplicateResourceException("Username or email already exists");
         }
     }
+
+
 }

@@ -47,6 +47,8 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable()) // Disable Cross-Site Request Forgery
                 .authorizeHttpRequests(auth -> auth
+                        // allow signup without authentication
+                        .requestMatchers("/auth/signup").permitAll()
                         // every request must be authenticated
                         .anyRequest().authenticated()
                 ).httpBasic();
