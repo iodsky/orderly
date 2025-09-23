@@ -1,10 +1,9 @@
 package com.iodsky.orderly.config;
 
-import com.iodsky.orderly.service.user.UserService;
+import com.iodsky.orderly.filter.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -12,75 +11,63 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.AccessDeniedHandlerImpl;
-import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+
 /*
-    🔒 Default Spring Security behavior:
-    -----------------------------------
-    - When Spring Security is on the classpath, it enables CSRF protection by default.
-    - CSRF applies to "unsafe" HTTP methods:
-        • POST
-        • PUT
-        • PATCH
-        • DELETE
-      (because these methods modify state on the server).
-    - This is why, out of the box, only GET requests work without extra configuration.
+    🔒 Security configuration for JWT-based authentication
+    ------------------------------------------------------
+    ✅ What this configuration does:
+      - Disables CSRF (not needed for stateless REST APIs)
+      - Exposes /auth/** endpoints publicly (used for login/registration)
+      - Requires authentication for all other endpoints
+      - Uses stateless session management (no HTTP sessions)
+      - Registers a custom JwtAuthenticationFilter before the UsernamePasswordAuthenticationFilter
+      - Configures DaoAuthenticationProvider with our UserDetailsService + BCryptPasswordEncoder
 
-    ⚡ Why disable CSRF for REST APIs?
-    ---------------------------------
-    - CSRF is mainly a risk for web application that rely on session cookies.
-    - In REST APIs, we usually use tokens (e.g., JWT) or HTTP headers for authentication.
-    - Because of that, CSRF protection is unnecessary and gets in the way of POST/PUT/PATCH/DELETE.
-    - So we disable CSRF explicitly.
-
-    🛠️ What this config does:
-    -------------------------
-    - Disables CSRF
-    - Requires authentication for every request (`anyRequest().authenticated()`)
-    - Uses HTTP Basic authentication (username/password sent via Authorization header)
+    ⚡ Flow of authentication:
+      1. User logs in via /auth/login with username + password
+      2. If credentials are valid, a JWT is issued
+      3. On subsequent requests, the client sends the JWT in the Authorization header
+      4. JwtAuthenticationFilter validates the token and sets authentication in the context
+      5. Requests are processed as authenticated without using server-side sessions
  */
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-@RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final UserDetailsService userDetailsService;
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
-
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http,
+                                                   JwtAuthenticationFilter jwtAuthenticationFilter,
+                                                   AuthenticationProvider authenticationProvider) throws Exception {
         http
-                .csrf()
-                .disable()
-                .authorizeHttpRequests()
-                .requestMatchers("")
-                .permitAll()
-                .anyRequest()
-                .authenticated()
-                .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .authenticationProvider(authenticationProvider())
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/auth/**")
+                        .permitAll()
+                        .anyRequest()
+                        .authenticated()
+                )
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
     @Bean
-    public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService);
-        authProvider.setPasswordEncoder(passwordEncoder());
-        return authProvider;
+    public AuthenticationProvider authenticationProvider(UserDetailsService userDetailsService) {
+       DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService);
+       provider.setPasswordEncoder(passwordEncoder());
+       return provider;
     }
 
     @Bean
