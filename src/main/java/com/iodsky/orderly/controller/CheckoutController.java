@@ -4,7 +4,7 @@ import com.iodsky.orderly.dto.mapper.OrderMapper;
 import com.iodsky.orderly.dto.order.OrderDto;
 import com.iodsky.orderly.model.Order;
 import com.iodsky.orderly.model.User;
-import com.iodsky.orderly.service.checkout.CheckoutService;
+import com.iodsky.orderly.service.CheckoutService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,10 +1,10 @@
-package com.iodsky.orderly.service.product;
+package com.iodsky.orderly.service;
 
 import com.iodsky.orderly.dto.mapper.ProductMapper;
-import com.iodsky.orderly.dto.product.ProductRequestDto;
-import com.iodsky.orderly.exceptions.ProductOutOfStockException;
-import com.iodsky.orderly.exceptions.ResourceInUseException;
-import com.iodsky.orderly.exceptions.ResourceNotFoundException;
+import com.iodsky.orderly.request.ProductRequest;
+import com.iodsky.orderly.exception.ProductOutOfStockException;
+import com.iodsky.orderly.exception.ResourceInUseException;
+import com.iodsky.orderly.exception.ResourceNotFoundException;
 import com.iodsky.orderly.model.Category;
 import com.iodsky.orderly.model.Product;
 import com.iodsky.orderly.repository.CategoryRepository;
@@ -18,14 +18,13 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class ProductService implements IProductService {
+public class ProductService {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final ProductMapper productMapper;
 
-    @Override
-    public Product addProduct(ProductRequestDto productRequestDto) {
+    public Product addProduct(ProductRequest productRequestDto) {
         Category category = categoryRepository.findByName(productRequestDto.getCategory())
                 .orElseGet(() -> categoryRepository
                         .save(Category.builder().name(productRequestDto.getCategory()).build()));
@@ -36,13 +35,11 @@ public class ProductService implements IProductService {
         return productRepository.save(product);
     }
 
-    @Override
     public Product getProduct(UUID id) {
         return productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found for id " + id));
     }
 
-    @Override
     public void deleteProductById(UUID id) {
         try {
             productRepository.findById(id).ifPresentOrElse(productRepository::delete, () -> {
@@ -53,8 +50,7 @@ public class ProductService implements IProductService {
         }
     }
 
-    @Override
-    public Product updateProduct(UUID id, ProductRequestDto productRequestDto) {
+    public Product updateProduct(UUID id, ProductRequest productRequestDto) {
         Product existingProduct = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found for id " + id));
 
@@ -73,7 +69,6 @@ public class ProductService implements IProductService {
         return productRepository.save(existingProduct);
     }
 
-    @Override
     public List<Product> getProducts(String name, String category, String brand) {
         List<Product> products;
 
@@ -94,12 +89,10 @@ public class ProductService implements IProductService {
         return products;
     }
 
-    @Override
     public Long getProductsCountByBrandAndName(String brand, String name) {
         return productRepository.countByBrandAndName(brand, name);
     }
 
-    @Override
     public Product decreaseStock(UUID id, int quanity) {
         Product product = getProduct(id);
 

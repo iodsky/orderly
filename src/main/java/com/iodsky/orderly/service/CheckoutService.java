@@ -1,15 +1,12 @@
-package com.iodsky.orderly.service.checkout;
+package com.iodsky.orderly.service;
 
 import com.iodsky.orderly.enums.OrderStatus;
-import com.iodsky.orderly.exceptions.EmptyCartException;
+import com.iodsky.orderly.exception.EmptyCartException;
 import com.iodsky.orderly.model.Cart;
 import com.iodsky.orderly.model.Order;
 import com.iodsky.orderly.model.OrderItem;
 import com.iodsky.orderly.model.Product;
 import com.iodsky.orderly.model.User;
-import com.iodsky.orderly.service.cart.CartService;
-import com.iodsky.orderly.service.order.OrderService;
-import com.iodsky.orderly.service.product.ProductService;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,13 +16,12 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
-public class CheckoutService implements ICheckoutService {
+public class CheckoutService  {
 
     private final OrderService orderService;
     private final CartService cartService;
     private final ProductService productService;
 
-    @Override
     @Transactional
     public Order placeOrder(User user) {
         Cart cart = cartService.getCartByUser(user);

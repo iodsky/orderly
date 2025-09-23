@@ -1,9 +1,9 @@
 package com.iodsky.orderly.controller;
 
-import com.iodsky.orderly.dto.auth.AuthenticateResponse;
-import com.iodsky.orderly.dto.auth.LoginDto;
-import com.iodsky.orderly.dto.auth.SignupDto;
-import com.iodsky.orderly.service.auth.AuthenticationService;
+import com.iodsky.orderly.response.AuthenticationResponse;
+import com.iodsky.orderly.request.LoginRequest;
+import com.iodsky.orderly.request.SignupRequest;
+import com.iodsky.orderly.service.AuthenticationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,12 +20,12 @@ public class AuthController {
     private final AuthenticationService authenticationService;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthenticateResponse> register(@Valid @RequestBody SignupDto request) {
+    public ResponseEntity<AuthenticationResponse> register(@Valid @RequestBody SignupRequest request) {
         return ResponseEntity.ok(authenticationService.register(request));
     }
 
     @PostMapping("/authenticate")
-    public ResponseEntity<AuthenticateResponse> authenticate(@Valid @RequestBody LoginDto request) {
+    public ResponseEntity<AuthenticationResponse> authenticate(@Valid @RequestBody LoginRequest request) {
         return ResponseEntity.ok(authenticationService.authenticate(request));
     }
 

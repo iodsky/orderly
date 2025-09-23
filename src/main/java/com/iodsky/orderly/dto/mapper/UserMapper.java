@@ -1,9 +1,9 @@
 package com.iodsky.orderly.dto.mapper;
 
-import com.iodsky.orderly.dto.user.AddUserDto;
+import com.iodsky.orderly.request.AddUserRequest;
 
 import com.iodsky.orderly.dto.user.UserDto;
-import com.iodsky.orderly.exceptions.ResourceNotFoundException;
+import com.iodsky.orderly.exception.ResourceNotFoundException;
 import com.iodsky.orderly.model.Role;
 import com.iodsky.orderly.model.User;
 import com.iodsky.orderly.repository.RoleRepository;
@@ -30,7 +30,7 @@ public class UserMapper {
                 .build();
     }
 
-    public User toEntity(AddUserDto dto) {
+    public User toEntity(AddUserRequest dto) {
         Role role = roleRepository.findByRole(dto.getRole()).orElseThrow(() -> new ResourceNotFoundException("Role not found"));
         return User.builder()
                 .firstName(dto.getFirstName())

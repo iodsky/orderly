@@ -3,6 +3,7 @@ package com.iodsky.orderly.controller;
 import java.util.UUID;
 
 import com.iodsky.orderly.model.User;
+import com.iodsky.orderly.service.CartItemService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.iodsky.orderly.dto.cart.CartItemDto;
 import com.iodsky.orderly.dto.mapper.CartItemMapper;
 import com.iodsky.orderly.model.CartItem;
-import com.iodsky.orderly.service.cartItem.ICartItemService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,7 +26,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CartItemController {
 
-  private final ICartItemService cartItemService;
+  private final CartItemService cartItemService;
   private final CartItemMapper cartItemMapper;
 
   @PostMapping("/{productId}")

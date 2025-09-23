@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.iodsky.orderly.dto.category.CategoryDto;
 import com.iodsky.orderly.dto.mapper.CategoryMapper;
-import com.iodsky.orderly.service.category.CategoryService;
+import com.iodsky.orderly.service.CategoryService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

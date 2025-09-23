@@ -1,14 +1,13 @@
-package com.iodsky.orderly.service.auth;
+package com.iodsky.orderly.service;
 
-import com.iodsky.orderly.dto.auth.AuthenticateResponse;
-import com.iodsky.orderly.dto.auth.LoginDto;
-import com.iodsky.orderly.dto.auth.SignupDto;
-import com.iodsky.orderly.exceptions.DuplicateResourceException;
+import com.iodsky.orderly.response.AuthenticationResponse;
+import com.iodsky.orderly.request.LoginRequest;
+import com.iodsky.orderly.request.SignupRequest;
+import com.iodsky.orderly.exception.DuplicateResourceException;
 import com.iodsky.orderly.model.Role;
 import com.iodsky.orderly.model.User;
 import com.iodsky.orderly.repository.RoleRepository;
 import com.iodsky.orderly.repository.UserRepository;
-import com.iodsky.orderly.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,39 +26,39 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    public AuthenticateResponse register(SignupDto dto) {
+    public AuthenticationResponse register(SignupRequest request) {
         Role role = roleRepository.findByRole("CUSTOMER")
                 .orElseThrow(() -> new IllegalStateException("Default role CUSTOMER not found"));
 
         User user = User.builder()
-                .firstName(dto.getFirstName())
-                .lastName(dto.getLastName())
-                .username(dto.getUsername())
-                .email(dto.getEmail())
-                .password(passwordEncoder.encode(dto.getPassword()))
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .username(request.getUsername())
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
                 .role(role)
                 .build();
 
         try {
             userRepository.save(user);
             String token = jwtService.generateToken(user);
-            return AuthenticateResponse.builder().token(token).build();
+            return AuthenticationResponse.builder().token(token).build();
         } catch (DataIntegrityViolationException e) {
             throw new DuplicateResourceException("Username or email already exists");
         }
     }
 
-    public AuthenticateResponse authenticate(LoginDto dto) {
+    public AuthenticationResponse authenticate(LoginRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        dto.getUsername(),
-                        dto.getPassword()
+                        request.getUsername(),
+                        request.getPassword()
                 )
         );
-        User user = userRepository.findByUsername(dto.getUsername()).orElseThrow(
+        User user = userRepository.findByUsername(request.getUsername()).orElseThrow(
                 () -> new BadCredentialsException("User not found.")
         );
         String token = jwtService.generateToken(user);
-        return AuthenticateResponse.builder().token(token).build();
+        return AuthenticationResponse.builder().token(token).build();
     }
 }

@@ -1,4 +1,4 @@
-package com.iodsky.orderly.exceptions;
+package com.iodsky.orderly.exception;
 
 public class DuplicateResourceException extends RuntimeException {
 

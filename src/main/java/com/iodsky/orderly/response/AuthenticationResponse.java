@@ -1,10 +1,10 @@
-package com.iodsky.orderly.dto.auth;
+package com.iodsky.orderly.response;
 
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Builder
-public class AuthenticateResponse {
+public class AuthenticationResponse {
     private String token;
 }

@@ -1,4 +1,4 @@
-package com.iodsky.orderly.dto.product;
+package com.iodsky.orderly.request;
 
 import java.math.BigDecimal;
 
@@ -9,7 +9,7 @@ import jakarta.validation.constraints.Positive;
 import lombok.Data;
 
 @Data
-public class ProductRequestDto {
+public class ProductRequest {
   @NotBlank(message = "Product name is required")
   private String name;
 

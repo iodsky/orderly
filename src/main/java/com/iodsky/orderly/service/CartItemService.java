@@ -1,35 +1,31 @@
-package com.iodsky.orderly.service.cartItem;
+package com.iodsky.orderly.service;
 
 import java.util.UUID;
 
 import com.iodsky.orderly.model.User;
 import org.springframework.stereotype.Service;
 
-import com.iodsky.orderly.exceptions.ResourceNotFoundException;
+import com.iodsky.orderly.exception.ResourceNotFoundException;
 import com.iodsky.orderly.model.Cart;
 import com.iodsky.orderly.model.CartItem;
 import com.iodsky.orderly.model.Product;
 import com.iodsky.orderly.repository.CartItemRepository;
-import com.iodsky.orderly.service.cart.ICartService;
-import com.iodsky.orderly.service.product.IProductService;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class CartItemService implements ICartItemService {
+public class CartItemService {
 
   private final CartItemRepository cartItemRepository;
-  private final ICartService cartService;
-  private final IProductService productService;
+  private final CartService cartService;
+  private final ProductService productService;
 
-  @Override
   public CartItem getCartItem(UUID cartId, UUID productId, User user) {
     return cartService.getCart(cartId, user).getItems().stream().filter(i -> i.getProduct().getId().equals(productId))
         .findFirst().orElseThrow(() -> new ResourceNotFoundException("Cart item not found for id " + productId));
   }
 
-  @Override
   public CartItem addItemToCart(UUID productId, int quantity, User user) {
     // Get cart
     Cart cart = cartService.getCartByUser(user);
@@ -58,7 +54,6 @@ public class CartItemService implements ICartItemService {
     return item;
   }
 
-  @Override
   public void removeItemFromCart(UUID cartId, UUID productId, User user) {
     Cart cart = cartService.getCart(cartId, user);
     CartItem item = cart.getItems().stream()
@@ -69,7 +64,6 @@ public class CartItemService implements ICartItemService {
     cartService.saveCart(cart);
   }
 
-  @Override
   public CartItem updateItemQuantity(UUID cartId, UUID productId, int quantity, User user) {
     Cart cart = cartService.getCart(cartId, user);
     CartItem item = cart.getItems().stream()

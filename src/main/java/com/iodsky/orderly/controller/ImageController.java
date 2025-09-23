@@ -22,7 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.iodsky.orderly.dto.image.ImageDto;
 import com.iodsky.orderly.dto.mapper.ImageMapper;
 import com.iodsky.orderly.model.Image;
-import com.iodsky.orderly.service.image.ImageService;
+import com.iodsky.orderly.service.ImageService;
 
 import lombok.RequiredArgsConstructor;
 

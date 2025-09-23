@@ -1,4 +1,4 @@
-package com.iodsky.orderly.exceptions;
+package com.iodsky.orderly.response;
 
 import java.time.LocalDateTime;
 import java.util.List;

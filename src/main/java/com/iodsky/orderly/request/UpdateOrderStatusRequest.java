@@ -1,4 +1,4 @@
-package com.iodsky.orderly.dto.order;
+package com.iodsky.orderly.request;
 
 import com.iodsky.orderly.enums.OrderStatus;
 
@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class UpdateOrderStatusDto {
+public class UpdateOrderStatusRequest {
 
   @NotNull(message = "Order status cannot be blank")
   private OrderStatus status;

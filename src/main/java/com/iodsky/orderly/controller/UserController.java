@@ -1,10 +1,10 @@
 package com.iodsky.orderly.controller;
 
 import com.iodsky.orderly.dto.mapper.UserMapper;
-import com.iodsky.orderly.dto.user.AddUserDto;
+import com.iodsky.orderly.request.AddUserRequest;
 import com.iodsky.orderly.dto.user.UserDto;
 import com.iodsky.orderly.model.User;
-import com.iodsky.orderly.service.user.UserService;
+import com.iodsky.orderly.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,7 +23,7 @@ public class UserController {
     private final UserMapper userMapper;
 
     @PostMapping()
-    public ResponseEntity<UserDto> createUser(@Valid  @RequestBody AddUserDto dto) {
+    public ResponseEntity<UserDto> createUser(@Valid  @RequestBody AddUserRequest dto) {
         User entity = userMapper.toEntity(dto);
         User user = userService.addUser(entity);
         return new ResponseEntity<>(userMapper.toDto(user), HttpStatus.CREATED);

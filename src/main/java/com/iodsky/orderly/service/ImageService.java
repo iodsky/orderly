@@ -1,4 +1,4 @@
-package com.iodsky.orderly.service.image;
+package com.iodsky.orderly.service;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -8,35 +8,31 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.iodsky.orderly.exceptions.ResourceNotFoundException;
+import com.iodsky.orderly.exception.ResourceNotFoundException;
 import com.iodsky.orderly.model.Image;
 import com.iodsky.orderly.model.Product;
 import com.iodsky.orderly.repository.ImageRepository;
-import com.iodsky.orderly.service.product.ProductService;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class ImageService implements IImageService {
+public class ImageService {
 
   private final ImageRepository imageRepository;
   private final ProductService productService;
 
-  @Override
   public Image getImageById(UUID id) {
     return imageRepository.findById(id)
         .orElseThrow(() -> new ResourceNotFoundException("Image not found for id " + id));
   }
 
-  @Override
   public void deleteImageById(UUID id) {
     imageRepository.findById(id).ifPresentOrElse(imageRepository::delete, () -> {
       throw new ResourceNotFoundException("Image not found for id " + id);
     });
   }
 
-  @Override
   public List<Image> saveImage(List<MultipartFile> files, UUID productId) {
     Product product = productService.getProduct(productId);
 
@@ -59,7 +55,6 @@ public class ImageService implements IImageService {
     }
   }
 
-  @Override
   public Image updateImage(MultipartFile file, UUID imageId) {
     Image existingImage = imageRepository.findById(imageId)
         .orElseThrow(() -> new ResourceNotFoundException("Image not found for id " + imageId));

@@ -1,4 +1,4 @@
-package com.iodsky.orderly.exceptions;
+package com.iodsky.orderly.exception;
 
 import java.util.UUID;
 

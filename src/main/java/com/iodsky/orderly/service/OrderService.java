@@ -1,7 +1,7 @@
-package com.iodsky.orderly.service.order;
+package com.iodsky.orderly.service;
 
 import com.iodsky.orderly.enums.OrderStatus;
-import com.iodsky.orderly.exceptions.ResourceNotFoundException;
+import com.iodsky.orderly.exception.ResourceNotFoundException;
 import com.iodsky.orderly.model.Order;
 import com.iodsky.orderly.model.User;
 import com.iodsky.orderly.repository.OrderRepository;
@@ -15,16 +15,14 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class OrderService implements IOrderService{
+public class OrderService {
 
     private final OrderRepository orderRepository;
 
-    @Override
     public Order saveOrder(Order order) {
         return orderRepository.save(order);
     }
 
-    @Override
     public Order getOrder(UUID orderId, User user) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with id " + orderId));
@@ -39,7 +37,6 @@ public class OrderService implements IOrderService{
         return order;
     }
 
-    @Override
     public Order updateOrderStatus(UUID orderId, OrderStatus status) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with id " + orderId));
@@ -48,7 +45,6 @@ public class OrderService implements IOrderService{
         return orderRepository.save(order);
     }
 
-    @Override
     public List<Order> getAllOrders(User user) {
         if (user.getRole().getRole().equals("ADMIN")) {
             return orderRepository.findAll();

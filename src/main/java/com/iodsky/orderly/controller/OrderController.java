@@ -2,10 +2,10 @@ package com.iodsky.orderly.controller;
 
 import com.iodsky.orderly.dto.mapper.OrderMapper;
 import com.iodsky.orderly.dto.order.OrderDto;
-import com.iodsky.orderly.dto.order.UpdateOrderStatusDto;
+import com.iodsky.orderly.request.UpdateOrderStatusRequest;
 import com.iodsky.orderly.model.Order;
 import com.iodsky.orderly.model.User;
-import com.iodsky.orderly.service.order.OrderService;
+import com.iodsky.orderly.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -41,7 +41,7 @@ public class OrderController {
 
     @PatchMapping("{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<OrderDto> updateOrderStatus(@PathVariable UUID id, @RequestBody UpdateOrderStatusDto dto) {
+    public ResponseEntity<OrderDto> updateOrderStatus(@PathVariable UUID id, @RequestBody UpdateOrderStatusRequest dto) {
         Order order = orderService.updateOrderStatus(id, dto.getStatus());
         return ResponseEntity.ok(orderMapper.toDto(order));
     }

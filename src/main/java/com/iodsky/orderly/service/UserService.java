@@ -1,6 +1,6 @@
-package com.iodsky.orderly.service.user;
+package com.iodsky.orderly.service;
 
-import com.iodsky.orderly.exceptions.DuplicateResourceException;
+import com.iodsky.orderly.exception.DuplicateResourceException;
 import com.iodsky.orderly.model.User;
 import com.iodsky.orderly.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

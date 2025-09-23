@@ -1,4 +1,4 @@
-package com.iodsky.orderly.dto.user;
+package com.iodsky.orderly.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class AddUserDto {
+public class AddUserRequest {
     @NotBlank(message = "First name is required")
     private String firstName;
 
