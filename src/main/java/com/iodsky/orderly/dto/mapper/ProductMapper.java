@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 import org.springframework.stereotype.Component;
 
-import com.iodsky.orderly.dto.product.ProductDto;
-import com.iodsky.orderly.request.ProductRequest;
+import com.iodsky.orderly.dto.ProductDto;
+import com.iodsky.orderly.request.AddProductRequest;
 import com.iodsky.orderly.model.Product;
 
 import lombok.RequiredArgsConstructor;
@@ -31,7 +31,7 @@ public class ProductMapper {
         .build();
   }
 
-  public Product toEntity(ProductRequest dto) {
+  public Product toEntity(AddProductRequest dto) {
     if (dto == null) {
       return null;
     }

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.iodsky.orderly.dto.cart.CartDto;
+import com.iodsky.orderly.dto.CartDto;
 import com.iodsky.orderly.dto.mapper.CartMapper;
 import com.iodsky.orderly.model.Cart;
 

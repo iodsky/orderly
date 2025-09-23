@@ -1,7 +1,7 @@
 package com.iodsky.orderly.service;
 
 import com.iodsky.orderly.dto.mapper.ProductMapper;
-import com.iodsky.orderly.request.ProductRequest;
+import com.iodsky.orderly.request.AddProductRequest;
 import com.iodsky.orderly.exception.ProductOutOfStockException;
 import com.iodsky.orderly.exception.ResourceInUseException;
 import com.iodsky.orderly.exception.ResourceNotFoundException;
@@ -24,7 +24,7 @@ public class ProductService {
     private final CategoryRepository categoryRepository;
     private final ProductMapper productMapper;
 
-    public Product addProduct(ProductRequest productRequestDto) {
+    public Product addProduct(AddProductRequest productRequestDto) {
         Category category = categoryRepository.findByName(productRequestDto.getCategory())
                 .orElseGet(() -> categoryRepository
                         .save(Category.builder().name(productRequestDto.getCategory()).build()));
@@ -50,7 +50,7 @@ public class ProductService {
         }
     }
 
-    public Product updateProduct(UUID id, ProductRequest productRequestDto) {
+    public Product updateProduct(UUID id, AddProductRequest productRequestDto) {
         Product existingProduct = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found for id " + id));
 

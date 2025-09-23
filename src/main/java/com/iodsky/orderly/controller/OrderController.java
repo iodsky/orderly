@@ -1,7 +1,7 @@
 package com.iodsky.orderly.controller;
 
 import com.iodsky.orderly.dto.mapper.OrderMapper;
-import com.iodsky.orderly.dto.order.OrderDto;
+import com.iodsky.orderly.dto.OrderDto;
 import com.iodsky.orderly.request.UpdateOrderStatusRequest;
 import com.iodsky.orderly.model.Order;
 import com.iodsky.orderly.model.User;

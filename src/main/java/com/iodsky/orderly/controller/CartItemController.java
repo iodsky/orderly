@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.iodsky.orderly.dto.cart.CartItemDto;
+import com.iodsky.orderly.dto.CartItemDto;
 import com.iodsky.orderly.dto.mapper.CartItemMapper;
 import com.iodsky.orderly.model.CartItem;
 

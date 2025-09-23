@@ -1,7 +1,7 @@
 package com.iodsky.orderly.dto.mapper;
 
-import com.iodsky.orderly.dto.order.OrderDto;
-import com.iodsky.orderly.dto.order.OrderItemDto;
+import com.iodsky.orderly.dto.OrderDto;
+import com.iodsky.orderly.dto.OrderItemDto;
 import com.iodsky.orderly.model.Order;
 import org.springframework.stereotype.Component;
 

@@ -2,7 +2,7 @@ package com.iodsky.orderly.controller;
 
 import com.iodsky.orderly.dto.mapper.UserMapper;
 import com.iodsky.orderly.request.AddUserRequest;
-import com.iodsky.orderly.dto.user.UserDto;
+import com.iodsky.orderly.dto.UserDto;
 import com.iodsky.orderly.model.User;
 import com.iodsky.orderly.service.UserService;
 import jakarta.validation.Valid;

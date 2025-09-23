@@ -4,7 +4,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.iodsky.orderly.dto.category.CategoryDto;
+import com.iodsky.orderly.dto.CategoryDto;
 import com.iodsky.orderly.dto.mapper.CategoryMapper;
 import com.iodsky.orderly.service.CategoryService;
 
