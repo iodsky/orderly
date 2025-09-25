@@ -3,6 +3,8 @@ package com.iodsky.orderly.controller;
 import java.util.List;
 import java.util.UUID;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,18 +30,26 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
 @RequestMapping("/products")
+@SecurityRequirement(name = "bearerAuth")
 @RequiredArgsConstructor
 public class ProductController {
 
   private final ProductService productService;
   private final ProductMapper productMapper;
 
+  @Operation(
+          summary = "Creates a new product. Only Admins can perform this action."
+  )
   @PostMapping
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<ProductDto> createProduct(@Valid() @RequestBody() AddProductRequest request) {
     Product product = productService.addProduct(request);
     return new ResponseEntity<>(productMapper.toDto(product), HttpStatus.CREATED);
   }
+
+  @Operation(
+          summary = "Fetches products filtered by optional category, brand, or name."
+  )
 
   @GetMapping
   public ResponseEntity<List<ProductDto>> getProducts(
@@ -52,12 +62,18 @@ public class ProductController {
     return ResponseEntity.ok(products);
   }
 
+  @Operation(
+          summary = "Fetches a product by it's ID."
+  )
   @GetMapping("/{id}")
   public ResponseEntity<ProductDto> getProductById(@PathVariable UUID id) {
     Product product = productService.getProduct(id);
     return ResponseEntity.ok(productMapper.toDto(product));
   }
 
+  @Operation(
+          summary = "Updates a product by it's ID. Only Admins can perform this action."
+  )
   @PutMapping("/{id}")
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<ProductDto> updateProduct(@PathVariable UUID id,
@@ -66,6 +82,9 @@ public class ProductController {
     return ResponseEntity.ok(productMapper.toDto(product));
   }
 
+  @Operation(
+          summary = "Deletes a product by it's ID. Only Admins can perform this action."
+  )
   @DeleteMapping("/{id}")
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<String> deleteProduct(@PathVariable UUID id) {

@@ -3,6 +3,8 @@ package com.iodsky.orderly.controller;
 import java.util.List;
 import java.util.UUID;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -28,12 +30,16 @@ import lombok.RequiredArgsConstructor;
 
 @RestController()
 @RequestMapping("/images")
+@SecurityRequirement(name = "bearerAuth")
 @RequiredArgsConstructor
 public class ImageController {
 
   private final ImageService imageService;
   private final ImageMapper imageMapper;
 
+  @Operation(
+          summary = "Uploads one or more images for a product. Only Admins can perform this action."
+  )
   @PostMapping()
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<List<ImageDto>> uploadImage(
@@ -45,6 +51,9 @@ public class ImageController {
     return new ResponseEntity<>(savedImages, HttpStatus.CREATED);
   }
 
+  @Operation(
+          summary = "Fetches an image by its ID."
+  )
   @GetMapping("{id}")
   public ResponseEntity<ByteArrayResource> getImageById(@PathVariable() UUID id) {
     Image image = imageService.getImageById(id);
@@ -53,6 +62,9 @@ public class ImageController {
         .body(new ByteArrayResource(image.getImage()));
   }
 
+  @Operation(
+          summary = "Updates an existing image by ID. Only Admins can perform this action."
+  )
   @PutMapping("{id}")
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<ImageDto> updateImage(@PathVariable() UUID id, @RequestParam() MultipartFile image) {
@@ -60,6 +72,9 @@ public class ImageController {
     return ResponseEntity.ok(updatedImage);
   }
 
+  @Operation(
+          summary = "Deletes an existing image by ID. Only Admins can perform this action."
+  )
   @DeleteMapping("{id}")
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<String> deleteImage(@PathVariable() UUID id) {

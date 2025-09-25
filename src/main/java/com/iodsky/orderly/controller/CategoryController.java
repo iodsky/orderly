@@ -1,5 +1,7 @@
 package com.iodsky.orderly.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,12 +27,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/categories")
+@SecurityRequirement(name = "bearerAuth")
 @RequiredArgsConstructor
 public class CategoryController {
 
   private final CategoryService categoryService;
   private final CategoryMapper categoryMapper;
 
+  @Operation(
+          summary = "Create a product category. Only Admin can perform this action."
+  )
   @PostMapping
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<CategoryDto> createCategory(@Valid() @RequestBody CategoryDto categoryDto) {
@@ -39,6 +45,9 @@ public class CategoryController {
     return new ResponseEntity<>(category, HttpStatus.CREATED);
   }
 
+  @Operation(
+          summary = "Fetches all product categories. Only Admin can perform this action."
+  )
   @GetMapping
   public ResponseEntity<List<CategoryDto>> getCategories() {
     List<CategoryDto> categories = categoryService.getAllCategories().stream().map(categoryMapper::toDto).toList();
@@ -46,6 +55,9 @@ public class CategoryController {
     return ResponseEntity.ok(categories);
   }
 
+  @Operation(
+          summary = "Updates a category by category ID. Only Admin can perform this action."
+  )
   @PutMapping("/{id}")
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<CategoryDto> updateCategory(@PathVariable() UUID id,
@@ -55,6 +67,9 @@ public class CategoryController {
     return ResponseEntity.ok(category);
   }
 
+  @Operation(
+          summary = "Removes a category by category ID. Only Admin can perform this action."
+  )
   @DeleteMapping("/{id}")
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<String> deleteProduct(@PathVariable() UUID id) {

@@ -4,6 +4,8 @@ import java.util.UUID;
 
 import com.iodsky.orderly.model.User;
 import com.iodsky.orderly.service.CartItemService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -23,12 +25,16 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/carts/items")
+@SecurityRequirement(name = "bearerAuth")
 @RequiredArgsConstructor
 public class CartItemController {
 
   private final CartItemService cartItemService;
   private final CartItemMapper cartItemMapper;
 
+  @Operation(
+          summary = "Adds a product with an optional quantity to the authenticated user's cart."
+  )
   @PostMapping("/{productId}")
   public ResponseEntity<CartItemDto> addItemToCart(
       @PathVariable UUID productId,
@@ -39,6 +45,9 @@ public class CartItemController {
     return ResponseEntity.ok(cartItemMapper.toDto(item));
   }
 
+  @Operation(
+          summary = "Fetches a cart item by cart ID and product ID for the authenticated user."
+  )
   @GetMapping("/{productId}")
   public ResponseEntity<CartItemDto> getCartItem(
       @RequestParam UUID cartId,
@@ -48,6 +57,9 @@ public class CartItemController {
     return ResponseEntity.ok(cartItemMapper.toDto(item));
   }
 
+  @Operation(
+          summary = "Updates the quantity of a cart item for the authenticated user by cart and product ID."
+  )
   @PutMapping("/{productId}")
   public ResponseEntity<CartItemDto> updateItemQuantity(
       @PathVariable UUID productId,
@@ -58,6 +70,10 @@ public class CartItemController {
     return ResponseEntity.ok(cartItemMapper.toDto(item));
   }
 
+
+  @Operation(
+          summary = "Removes a cart item for the authenticated user by cart and product ID."
+  )
   @DeleteMapping("/{productId}")
   public ResponseEntity<String> removeItem(@RequestParam UUID cartId, @PathVariable UUID productId, @AuthenticationPrincipal User user) {
     cartItemService.removeItemFromCart(cartId, productId, user);
