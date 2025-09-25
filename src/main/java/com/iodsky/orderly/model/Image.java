@@ -1,9 +1,12 @@
 package com.iodsky.orderly.model;
 
+import java.util.Date;
 import java.util.UUID;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Data
 @Entity
@@ -21,4 +24,11 @@ public class Image {
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
+
+    @CreationTimestamp
+    private Date createdAt;
+
+    @UpdateTimestamp
+    @Column(updatable = false)
+    private Date updatedAt;
 }
