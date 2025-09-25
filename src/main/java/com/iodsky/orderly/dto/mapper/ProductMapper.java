@@ -25,9 +25,11 @@ public class ProductMapper {
         .id(product.getId())
         .name(product.getName())
         .description(product.getDescription())
-        .price(product.getPrice()).stock(product.getStock())
+        .brand(product.getBrand())
         .category(product.getCategory().getName())
         .images(product.getImages().stream().map(imageMapper::toDto).toList())
+        .price(product.getPrice())
+        .stock(product.getStock())
         .build();
   }
 
