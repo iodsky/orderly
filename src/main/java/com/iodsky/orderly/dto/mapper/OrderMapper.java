@@ -16,7 +16,7 @@ public class OrderMapper {
 
         return OrderDto.builder()
                 .id(order.getId())
-                .dateOrdered(order.getDateOrdered())
+                .createdAt(order.getCreatedAt())
                 .totalAmount(order.getTotalAmount())
                 .status(order.getOrderStatus())
                 .items(order.getItems()

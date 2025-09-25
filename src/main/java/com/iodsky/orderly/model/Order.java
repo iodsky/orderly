@@ -1,7 +1,7 @@
 package com.iodsky.orderly.model;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -14,6 +14,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Data
 @Entity
@@ -30,7 +32,6 @@ public class Order {
   @JoinColumn(name = "user_id")
   private User user;
 
-  private LocalDateTime dateOrdered;
   private BigDecimal totalAmount;
 
   @Enumerated(EnumType.STRING)
@@ -41,4 +42,10 @@ public class Order {
   @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
   private Set<OrderItem> items = new HashSet<>();
 
+  @CreationTimestamp
+  @Column(updatable = false)
+  private Date createdAt;
+
+  @UpdateTimestamp
+  private Date updatedAt;
 }

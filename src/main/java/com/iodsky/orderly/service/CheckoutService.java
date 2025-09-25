@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
@@ -32,9 +32,9 @@ public class CheckoutService  {
 
         Order order = Order.builder()
                 .user(user)
-                .dateOrdered(LocalDateTime.now())
                 .totalAmount(cart.getTotalAmount())
                 .orderStatus(OrderStatus.PROCESSING)
+                .createdAt(new Date())
                 .build();
 
         cart.getItems().forEach(item -> {
