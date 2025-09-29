@@ -40,14 +40,19 @@ public class CategoryService  {
         .orElseThrow(() -> new ResourceNotFoundException("Category not found for id: " + id));
   }
 
+  public Category getOrCreateCategory(String name) {
+    return categoryRepository.findByName(name)
+            .orElseGet(() -> categoryRepository
+                    .save(Category.builder().name(name).build()));
+  }
+
   public List<Category> getAllCategories() {
     return categoryRepository.findAll();
   }
 
   public Category updateCategory(UUID id, CategoryDto categoryDto) {
     try {
-      Category existing = categoryRepository.findById(id)
-          .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
+      Category existing = getCategoryById(id);
 
       existing.setName(categoryDto.getName());
 

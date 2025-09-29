@@ -1,13 +1,12 @@
 package com.iodsky.orderly.service;
 
 import com.iodsky.orderly.dto.mapper.ProductMapper;
-import com.iodsky.orderly.request.AddProductRequest;
+import com.iodsky.orderly.request.ProductRequest;
 import com.iodsky.orderly.exception.ProductOutOfStockException;
 import com.iodsky.orderly.exception.ResourceInUseException;
 import com.iodsky.orderly.exception.ResourceNotFoundException;
 import com.iodsky.orderly.model.Category;
 import com.iodsky.orderly.model.Product;
-import com.iodsky.orderly.repository.CategoryRepository;
 import com.iodsky.orderly.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -21,15 +20,12 @@ import java.util.UUID;
 public class ProductService {
 
     private final ProductRepository productRepository;
-    private final CategoryRepository categoryRepository;
     private final ProductMapper productMapper;
+    private final CategoryService categoryService;
 
-    public Product addProduct(AddProductRequest productRequestDto) {
-        Category category = categoryRepository.findByName(productRequestDto.getCategory())
-                .orElseGet(() -> categoryRepository
-                        .save(Category.builder().name(productRequestDto.getCategory()).build()));
-
-        Product product = productMapper.toEntity(productRequestDto);
+    public Product addProduct(ProductRequest request) {
+        Category category = categoryService.getOrCreateCategory(request.getCategory());
+        Product product = productMapper.toEntity(request);
         product.setCategory(category);
 
         return productRepository.save(product);
@@ -50,57 +46,60 @@ public class ProductService {
         }
     }
 
-    public Product updateProduct(UUID id, AddProductRequest productRequestDto) {
+    public Product updateProduct(UUID id, ProductRequest request) {
         Product existingProduct = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found for id " + id));
 
-        existingProduct.setName(productRequestDto.getName());
-        existingProduct.setDescription(productRequestDto.getDescription());
-        existingProduct.setBrand(productRequestDto.getBrand());
-        existingProduct.setPrice(productRequestDto.getPrice());
-        existingProduct.setStock(productRequestDto.getStock());
+        existingProduct.setName(request.getName());
+        existingProduct.setDescription(request.getDescription());
+        existingProduct.setBrand(request.getBrand());
+        existingProduct.setPrice(request.getPrice());
+        existingProduct.setStock(request.getStock());
 
-        Category category = categoryRepository.findByName(productRequestDto.getCategory())
-                .orElseGet(() -> categoryRepository
-                        .save(Category.builder().name(productRequestDto.getCategory()).build()));
+        Category category = categoryService.getOrCreateCategory(request.getCategory());
 
         existingProduct.setCategory(category);
 
         return productRepository.save(existingProduct);
     }
 
+    private String normalize(String value) {
+        return (value == null || value.isBlank()) ? null : value;
+    }
+
     public List<Product> getProducts(String name, String category, String brand) {
-        List<Product> products;
+        name = normalize(name);
+        category = normalize(category);
+        brand = normalize(brand);
 
         if (category != null && brand != null) {
-            products = productRepository.findByCategoryNameAndBrand(category, brand);
+            return productRepository.findByCategoryNameAndBrand(category, brand);
         } else if (brand != null && name != null) {
-            products = productRepository.findByBrandAndName(brand, name);
+            return productRepository.findByBrandAndName(brand, name);
         } else if (category != null) {
-            products = productRepository.findByCategoryName(category);
+            return productRepository.findByCategoryName(category);
         } else if (brand != null) {
-            products = productRepository.findByBrand(brand);
+            return productRepository.findByBrand(brand);
         } else if (name != null) {
-            products = productRepository.findByName(name);
+            return productRepository.findByName(name);
         } else {
-            products = productRepository.findAll();
+            return productRepository.findAll();
         }
 
-        return products;
     }
 
     public Long getProductsCountByBrandAndName(String brand, String name) {
         return productRepository.countByBrandAndName(brand, name);
     }
 
-    public Product decreaseStock(UUID id, int quanity) {
+    public Product decreaseStock(UUID id, int quantity) {
         Product product = getProduct(id);
 
-        if (product.getStock() < quanity) {
+        if (product.getStock() < quantity) {
             throw new ProductOutOfStockException(product.getId());
         }
 
-        product.setStock(product.getStock() - quanity);
+        product.setStock(product.getStock() - quantity);
         return productRepository.save(product);
     }
 }
