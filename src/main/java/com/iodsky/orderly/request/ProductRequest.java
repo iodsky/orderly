@@ -6,10 +6,12 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
-public class AddProductRequest {
+@Builder
+public class ProductRequest {
   @NotBlank(message = "Product name is required")
   private String name;
 
@@ -23,6 +25,7 @@ public class AddProductRequest {
   @Positive(message = "Price must be positive")
   private BigDecimal price;
 
+  @NotNull
   @Min(value = 0, message = "Stock cannot be less than 0")
   private int stock;
 
