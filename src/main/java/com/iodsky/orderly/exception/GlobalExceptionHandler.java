@@ -11,6 +11,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -73,6 +74,12 @@ public class GlobalExceptionHandler {
   public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException ex) {
     ErrorResponse error = new ErrorResponse(LocalDateTime.now(), 403, "Forbidden", null);
     return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
+  }
+
+  @ExceptionHandler(MissingServletRequestPartException.class)
+  public ResponseEntity<ErrorResponse> handleIllegalArgument(MissingServletRequestPartException ex) {
+    ErrorResponse error = new ErrorResponse(LocalDateTime.now(), 400, ex.getMessage(), null);
+    return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
   }
 
   @ExceptionHandler(Exception.class)
