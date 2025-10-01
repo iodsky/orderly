@@ -51,7 +51,7 @@ public class ImageService {
 
       return savedImages;
     } catch (IOException e) {
-      throw new RuntimeException("An error has occured while saving image " + e.getMessage());
+      throw new RuntimeException("An error has occurred while saving image " + e.getMessage());
     }
   }
 
@@ -66,7 +66,7 @@ public class ImageService {
 
       return imageRepository.save(existingImage);
     } catch (IOException e) {
-      throw new RuntimeException("An error has occured while updating image " + e.getMessage());
+      throw new RuntimeException("An error has occurred while updating image " + e.getMessage());
     }
   }
 }
