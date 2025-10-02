@@ -22,3 +22,8 @@ security:
   jwt:
     secret-key:
     expiration-time:
+springdoc:
+  api-docs:
+    path: /docs
+  swagger-ui:
+    path: /swagger-ui.html
