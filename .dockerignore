@@ -1,0 +1,23 @@
+# Ignore system files
+.git
+../.gitignore
+.vscode
+.idea
+*.iml
+
+# Ignore frontend or docs
+client/
+docs/
+
+# Ignore build output
+target/
+
+# Ignore local environment files
+.env
+
+# Ignore Docker itself
+Docker/
+compose.yml
+
+# Maven wrapper cache
+.mvn/wrapper/maven-wrapper.jar
