@@ -1,0 +1,34 @@
+services:
+  mysql:
+    image: "mysql:latest"
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - 3307:3306
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - orderly-net
+
+  spring:
+    build: .
+    restart: always
+    ports:
+      - 8000:8000
+    environment:
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+    depends_on:
+      - mysql
+    networks:
+      - orderly-net
+
+volumes:
+  mysql-data:
+
+networks:
+  orderly-net:
