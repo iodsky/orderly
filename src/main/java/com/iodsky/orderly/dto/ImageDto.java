@@ -12,5 +12,4 @@ public class ImageDto {
   private String fileName;
   private String fileType;
   private UUID productId;
-  private String imageUrl;
 }
