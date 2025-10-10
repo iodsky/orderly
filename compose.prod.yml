@@ -16,14 +16,10 @@ services:
     restart: always
     ports:
       - 8000:8000
-    environment:
-      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
-      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
-      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
-      SECURITY_JWT_SECRET_KEY: ${SECURITY_JWT_SECRET_KEY}
-      SECURITY_JWT_EXPIRATION_TIME: ${SECURITY_JWT_EXPIRATION_TIME}
     depends_on:
       - mysql
+    volumes:
+      - ./application.yml:/config/application.yml
     networks:
       - orderly-net
 
