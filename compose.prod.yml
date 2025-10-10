@@ -14,12 +14,14 @@ services:
   spring:
     image: ghcr.io/iodsky/orderly-api:latest
     restart: always
+    volumes:
+      - ./application.yml:/app/application.yml
+    environment:
+      SPRING_CONFIG_LOCATION: /app/application.yml
     ports:
       - 8000:8000
     depends_on:
       - mysql
-    volumes:
-      - ./application.yml:/config/application.yml
     networks:
       - orderly-net
 

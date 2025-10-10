@@ -3,9 +3,9 @@ spring:
     name: orderly
 
   datasource:
-    url: ""
-    username: ""
-    password: ""
+    url:
+    username:
+    password:
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
@@ -19,7 +19,7 @@ spring:
 
   sql:
     init:
-      mode: always
+      mode: embedded
 
 server:
   port: 8000
