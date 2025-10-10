@@ -31,6 +31,13 @@ security:
     secret-key:
     expiration-time:
 
+aws:
+  s3:
+    region:
+    bucket:
+    access-key:
+    secret-key:
+
 springdoc:
   api-docs:
     path: /docs
