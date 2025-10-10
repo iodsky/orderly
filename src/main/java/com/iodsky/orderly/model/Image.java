@@ -24,9 +24,6 @@ public class Image {
     private String fileName;
     private String fileType;
 
-    @Lob
-    private byte[] image;
-
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
