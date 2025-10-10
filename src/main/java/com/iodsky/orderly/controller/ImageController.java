@@ -5,10 +5,9 @@ import java.util.UUID;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -55,11 +54,13 @@ public class ImageController {
           summary = "Fetches an image by its ID."
   )
   @GetMapping("{id}")
-  public ResponseEntity<ByteArrayResource> getImageById(@PathVariable() UUID id) {
-    Image image = imageService.getImageById(id);
-    return ResponseEntity.ok().contentType(MediaType.parseMediaType(image.getFileType()))
-        .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + image.getFileName() + "\"")
-        .body(new ByteArrayResource(image.getImage()));
+  public ResponseEntity<InputStreamResource> getImageById(@PathVariable() UUID id) {
+    ImageService.ImageStreamData data = imageService.getImageStream(id);
+
+    return ResponseEntity.ok()
+            .header(HttpHeaders.CONTENT_TYPE, data.fileType())
+            .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + data.fileName() + "\"")
+            .body(data.resource());
   }
 
   @Operation(
