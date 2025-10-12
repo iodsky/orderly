@@ -71,6 +71,8 @@ public class ImageService {
     Image existingImage = imageRepository.findById(imageId)
         .orElseThrow(() -> new ResourceNotFoundException("Image not found for id " + imageId));
 
+      s3Service.deleteObject(FOLDER, existingImage.getFileName());
+
       String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
       s3Service.putObject(file, FOLDER, fileName);
 
