@@ -14,6 +14,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.ResponseInputStream;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -31,6 +33,8 @@ class ImageServiceTest {
     private ImageRepository imageRepository;
     @Mock
     private ProductService productService;
+    @Mock
+    private S3Service s3Service;
 
     @InjectMocks
     private ImageService imageService;
@@ -43,7 +47,7 @@ class ImageServiceTest {
     private MultipartFile file2;
 
     @BeforeEach
-    void setup() throws IOException {
+    void setup() {
         this.randId = UUID.randomUUID();
 
         this.product = new Product();
@@ -56,7 +60,6 @@ class ImageServiceTest {
                 .product(product)
                 .fileType(file1.getContentType())
                 .fileName(file1.getOriginalFilename())
-                .image(file1.getBytes())
                 .build();
 
         this.image2 = Image
@@ -64,7 +67,6 @@ class ImageServiceTest {
                 .product(product)
                 .fileType(file2.getContentType())
                 .fileName(file2.getOriginalFilename())
-                .image(file2.getBytes())
                 .build();
     }
 
@@ -77,12 +79,19 @@ class ImageServiceTest {
             when(imageRepository.findById(randId))
                     .thenReturn(Optional.of(image1));
 
-            Image result = imageService.getImageById(randId);
+            ResponseInputStream<GetObjectResponse> mockStream = mock(ResponseInputStream.class);
+            when(s3Service.getObjectStream("product-images", image1.getFileName()))
+                    .thenReturn(mockStream);
+
+            ImageService.ImageStreamData result = imageService.getImageStream(randId);
 
             assertNotNull(result);
-            assertEquals(image1, result);
+            assertEquals(image1.getFileName(), result.fileName());
+            assertEquals(image1.getFileType(), result.fileType());
+            assertNotNull(result.resource());
 
             verify(imageRepository).findById(randId);
+            verify(s3Service).getObjectStream("product-images", image1.getFileName());
         }
 
         @Test
@@ -92,11 +101,12 @@ class ImageServiceTest {
 
             ResourceNotFoundException ex = assertThrows(
                     ResourceNotFoundException.class,
-                    () -> imageService.getImageById(randId)
+                    () -> imageService.getImageStream(randId)
             );
 
             assertTrue(ex.getMessage().contains(randId.toString()));
             verify(imageRepository).findById(randId);
+            verify(s3Service, never()).getObjectStream(anyString(), anyString());
         }
 
     }
@@ -114,6 +124,7 @@ class ImageServiceTest {
 
             verify(imageRepository).findById(randId);
             verify(imageRepository).delete(image1);
+            verify(s3Service).deleteObject(anyString(), anyString());
         }
 
         @Test
@@ -130,6 +141,8 @@ class ImageServiceTest {
 
             verify(imageRepository).findById(randId);
             verify(imageRepository, never()).delete(any());
+            verify(s3Service, never()).deleteObject(anyString(), anyString());
+
         }
     }
 
@@ -153,6 +166,7 @@ class ImageServiceTest {
 
             verify(productService).getProduct(randId);
             verify(imageRepository, times(2)).save(any(Image.class));
+            verify(s3Service, times(2)).putObject(any(MultipartFile.class), eq("product-images"), anyString());
         }
 
         @Test
@@ -168,6 +182,8 @@ class ImageServiceTest {
             assertTrue(ex.getMessage().contains(randId.toString()));
             verify(productService).getProduct(randId);
             verify(imageRepository, never()).save(any(Image.class));
+            verify(s3Service, never()).putObject(any(), any(), any());
+
         }
 
     }
@@ -183,15 +199,17 @@ class ImageServiceTest {
             when(imageRepository.save(any(Image.class)))
                     .then(inv -> inv.getArgument(0));
 
+            String oldFileName = image1.getFileName();
             Image result = imageService.updateImage(file2, randId);
 
             assertNotNull(result);
-            assertEquals(file2.getOriginalFilename(), result.getFileName());
+            assertTrue(result.getFileName().endsWith(file2.getOriginalFilename()));
             assertEquals(file2.getContentType(), result.getFileType());
-            assertEquals(file2.getBytes(), result.getImage());
 
             verify(imageRepository).findById(randId);
             verify(imageRepository).save(any(Image.class));
+            verify(s3Service).deleteObject("product-images", oldFileName);
+            verify(s3Service).putObject(eq(file2), eq("product-images"), anyString());
 
         }
 
