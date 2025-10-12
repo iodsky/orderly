@@ -1,6 +1,8 @@
 spring:
   application:
     name: orderly
+  profiles:
+    active: development
 
   datasource:
     url:
