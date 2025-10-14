@@ -1,16 +1,4 @@
 services:
-  mysql:
-    image: "mysql:latest"
-    restart: unless-stopped
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-    volumes:
-      - mysql-data:/var/lib/mysql
-    networks:
-      - orderly-net
-
   spring:
     image: ghcr.io/iodsky/orderly-api:latest
     restart: always
@@ -19,11 +7,20 @@ services:
     environment:
       SPRING_CONFIG_LOCATION: /app/application.yml
     ports:
-      - 8000:8000
-    depends_on:
-      - mysql
+      - 8000
+    labels:
+      - "traefik.enable=true"
+
+      # Route: orderly.iodsky.com → spring container
+      - "traefik.http.routers.orderly.rule=Host(`orderly.iodsky.com`)"
+      - "traefik.http.routers.orderly.entrypoints=websecure"
+      - "traefik.http.routers.orderly.tls.certresolver=myresolver"
+
+      # Internal service port
+      - "traefik.http.services.orderly.loadbalancer.server.port=8000"
     networks:
       - orderly-net
+      - traefik
 
   watchtower:
     image: containrrr/watchtower
@@ -44,8 +41,7 @@ services:
     networks:
         - orderly-net
 
-volumes:
-  mysql-data:
-
 networks:
   orderly-net:
+  traefik:
+    external: true
