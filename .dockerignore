@@ -8,16 +8,17 @@
 # Ignore frontend or docs
 client/
 docs/
+*md
 
 # Ignore build output
 target/
 
 # Ignore local environment files
-.env
+.env*
 
 # Ignore Docker itself
 Docker/
-compose.yml
+compose.*.yml
 
 # Maven wrapper cache
 .mvn/wrapper/maven-wrapper.jar
