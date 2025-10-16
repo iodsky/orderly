@@ -27,15 +27,13 @@ public class S3Config {
     @Bean
     public S3Client s3Client() {
 
-        AwsCredentialsProvider credentialsProvider;
+        AwsCredentialsProvider credentialsProvider = DefaultCredentialsProvider.builder().build();
 
         String activeProfile = environment.getActiveProfiles().length > 0
                 ? environment.getActiveProfiles()[0]
                 : "default";
 
-        if (activeProfile.equalsIgnoreCase("prod")) {
-            credentialsProvider = DefaultCredentialsProvider.builder().build();
-        } else {
+        if (activeProfile.equalsIgnoreCase("local")) {
             credentialsProvider = StaticCredentialsProvider.create(AwsBasicCredentials.create(accessKey, secretKey));
         }
 
