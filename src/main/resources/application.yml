@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: orderly
+
+server:
+  port: ${PORT}
+  servlet:
+    context-path: /api
+
+security:
+  jwt:
+    secret-key: ${JWT_SECRET_KEY}
+    expiration-time: ${JWT_EXPIRATION_TIME}
+
+springdoc:
+  api-docs:
+    path: /docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+aws:
+  s3:
+    region: ${AWS_S3_REGION}
+    bucket: ${AWS_S3_BUCKET}
+    base-folder: ${AWS_S3_BASE_FOLDER}
