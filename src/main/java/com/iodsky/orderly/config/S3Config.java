@@ -1,14 +1,19 @@
 package com.iodsky.orderly.config;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import software.amazon.awssdk.auth.credentials.*;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 
 @Configuration
+@RequiredArgsConstructor
 public class S3Config {
+
+    private final Environment environment;
 
     @Value("${aws.s3.region}")
     private String region;
@@ -19,15 +24,16 @@ public class S3Config {
     @Value("${aws.s3.secret-key}")
     private String secretKey;
 
-    @Value("${spring.profiles.active}")
-    private String profile;
-
     @Bean
     public S3Client s3Client() {
 
         AwsCredentialsProvider credentialsProvider;
 
-        if (profile.equalsIgnoreCase("production")) {
+        String activeProfile = environment.getActiveProfiles().length > 0
+                ? environment.getActiveProfiles()[0]
+                : "default";
+
+        if (activeProfile.equalsIgnoreCase("prod")) {
             credentialsProvider = DefaultCredentialsProvider.builder().build();
         } else {
             credentialsProvider = StaticCredentialsProvider.create(AwsBasicCredentials.create(accessKey, secretKey));
