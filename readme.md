@@ -9,15 +9,21 @@
 
 ## 📝 Overview
 
-**Orderly** is a full-featured **RESTful API** for an e-commerce platform, built with **Spring Boot** and **MySQL**.  
-It showcases modern **API design principles**, clean **service-layer architecture**, and production-ready **DevOps integration**.
+**Orderly** is a full-featured RESTful API for an e-commerce platform, built with **Spring Boot**.
+It demonstrates clean **service-layer architecture**, modern **API design principles**, and production-grade **DevOps integration**.
 
-The API provides complete **CRUD operations** across all core e-commerce entities and implements secure **Authentication, Authorization, and Role-Based Access Control (RBAC)** using **Spring Security** and **JWT**.  
-All endpoints are documented and testable through **Swagger/OpenAPI**.
+The API supports complete **CRUD operations** across all major e-commerce entities and features secure **Authentication**, **Authorization**, and **Role-Based Access Control (RBAC)** implemented with **Spring Security** and **JWT**.
+All endpoints are fully documented and testable through Swagger/OpenAPI.
 
-From a DevOps standpoint, **Orderly** is **containerized with Docker**, orchestrated via **Docker Compose**, and continuously integrated and deployed through a **GitHub Actions CI/CD pipeline**.  
-It is hosted on **AWS EC2**, with automated image updates managed by **Watchtower**, and leverages **AWS S3** for external image storage.
+From a DevOps perspective, **Orderly** is:
+* Containerized with Docker and orchestrated via Docker Compose.
+* Backed by GitHub Actions for CI/CD automation.
+* Hosted on AWS EC2, with Watchtower enabling automated container updates.
+* Integrated with AWS S3 for external image storage.
 
+Databases:
+* 🧩 Local development → uses MySQL, managed via Docker Compose
+* ☁️ Production → uses PostgreSQL, provisioned through AWS RDS
 ---
 
 
@@ -57,7 +63,7 @@ It is hosted on **AWS EC2**, with automated image updates managed by **Watchtowe
 |-------|-------------|
 | **Framework** | Spring Boot |
 | **Language** | Java 21 |
-| **Database** | MySQL (to be migrated to AWS RDS or Supabase) |
+| **Database** | MySQL (Local) · PostgreSQL via AWS RDS (Production) |
 | **Cloud Storage** | AWS S3 |
 | **Security** | Spring Security, JWT |
 | **Containerization** | Docker, Docker Compose |
@@ -104,25 +110,78 @@ The API is built around the following essential e-commerce models:
     ```
 
 2.  **Configure the environment:**
-    * Create a MySQL database named `orderly_db`.
-    * The application uses **`application.yml`** for configuration. Ensure your database credentials match the following structure in your `application.yml`:
-
+    * The application uses three YAML configuration files for different environments:
+      * `application.yml` - Base configuration (shared across all environments)
+      * `application-local.yml` - Local development configuration
+      * `application-prod.yml` - Production development
+    * You will also need a `.env` file (see the [Environment Variables](#-3-environment-variables) section below).
+    
+    **Example**
     ```yaml
+    # application.yml
     spring:
-      datasource:
-        url: jdbc:mysql://localhost:3306/orderly # <-- Use your database URL
-        username: [YOUR_DB_USERNAME]
-        password: [YOUR_DB_PASSWORD]
-    # ...
+      application:
+      name: orderly
+    
+    server:
+      port: ${PORT}
+      servlet:
+      context-path: /api
+    
     security:
       jwt:
-        secret-key: [A_SECURE_SECRET_KEY_FOR_JWT] # <-- Generate a strong, unique key
-        expiration-time: 3600000
+        secret-key: ${JWT_SECRET_KEY}
+        expiration-time: ${JWT_EXPIRATION_TIME}
+    
+    springdoc:
+    api-docs:
+      path: /docs
+    swagger-ui:
+      path: /swagger-ui.html
+    
+    aws:
+      s3:
+      region: ${AWS_S3_REGION}
+      bucket: ${AWS_S3_BUCKET}
+      base-folder: ${AWS_S3_BASE_FOLDER}
     ```
-
+    ```yaml
+    # application-local.yml
+    spring:
+      config:
+        activate:
+          on-profile: local
+    
+    datasource:
+      url: jdbc:mysql://${LOCAL_DB_HOST}:${LOCAL_DB_PORT}/${LOCAL_DB_NAME}
+      username: ${LOCAL_DB_USER}
+      password: ${LOCAL_DB_PASSWORD}
+      driver-class-name: com.mysql.cj.jdbc.Driver
+    
+    jpa:
+      hibernate:
+        ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+        dialect: org.hibernate.dialect.MySQL8Dialect
+    defer-datasource-initialization: true
+    
+    sql:
+      init:
+        mode: always
+        data-locations: classpath:data-local.sql
+    
+    aws:
+      s3:
+        access-key: ${AWS_ACCESS_KEY_ID}
+        secret-key: ${AWS_SECRET_ACCESS_KEY}
+    ```
+    
 3.  **Run locally:**
     ```bash
-    ./mvnw spring-boot:run
+    ./mvnw spring-boot:run -Dspring.profiles.active=local
     ```
 
 The API will be accessible at `http://localhost:8000/api`.
@@ -131,20 +190,20 @@ The API will be accessible at `http://localhost:8000/api`.
 
 ## 🐳 Dockerized Configuration
 
-The project uses **two Docker Compose configurations** for development and product environments.
+The project includes **two Docker Compose configurations** for different environments.
 
-### 1. Development (compose.yml)
+### 1. Development (compose.local.yml)
 
-This setup is ideal for **local development**, allowing you to rebuild and iterate on the code quickly.
+This setup is ideal for **local development**, using the application-local.yml profile.
 
 **Usage:**
 
 ```bash
-docker-compose up --build -d
+docker-compose -f compose.local.yml up --build -d
 ```
 
 This will:
-* Build your local Spring Boot image.
+* Build and run your local Spring Boot app with the local profile.
 * Run MySQL in a linked container.
 * Expose the app on port 8000.
 
@@ -159,28 +218,59 @@ docker-compose -f compose.prod.yml up -d
 ```
 
 This will:
-* Connects it to a MySQL container.
+* Run the API with the prod profile.
+* Connect it to a PostgreSQL database via AWS RDS.
 * Uses Watchtower to automatically update the container when a new image is pushed to GHCR.
 * Sends update notifications via email.
 
 ### 🧾 3. Environment Variables
 
-Your configuration values are managed via a .env file (excluded from version control).
-An example template is provided:
+All configuration values are managed through a .env file (excluded from version control).
+An example template is provided in **.env.template**:
 
 ```env
-# .env.template
+# Server
+PORT=
 
+# JWT
+JWT_SECRET_KEY=
+JWT_EXPIRATION_TIME=
+
+# Production datasource
+DB_HOST=
+DB_PORT=
+DB_NAME=
+DB_USER=
+DB_PASSWORD=
+
+# Development database
 MYSQL_ROOT_PASSWORD=
 MYSQL_DATABASE=
+MYSQL_USER=
 MYSQL_PASSWORD=
 
+# Development datasource
+LOCAL_DB_HOST=
+LOCAL_DB_PORT=
+LOCAL_DB_NAME=
+LOCAL_DB_USER=
+LOCAL_DB_PASSWORD=
+
+# AWS S3
+AWS_S3_REGION=
+AWS_S3_BUCKET=
+AWS_S3_BASE_FOLDER=
+
+# AWS (dev)
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+
+# Watchtower
 WATCHTOWER_EMAIL_FROM=
 WATCHTOWER_EMAIL_TO=
 WATCHTOWER_EMAIL_SERVER=
 WATCHTOWER_EMAIL_USER=
 WATCHTOWER_EMAIL_PASSWORD=
-
 ```
 
 **Usage**
@@ -188,7 +278,7 @@ WATCHTOWER_EMAIL_PASSWORD=
     ```bash
     cp .env.template .env
     ```
-2. Fill in your values in .env.
+2. Fill in your values in `.env`.
 3. Docker Compose will automatically load these environment variables during startup.
 
 ---
@@ -219,7 +309,8 @@ The following enhancements are planned to evolve **Orderly** by integrating indu
 
 - [x] **Containerization with Docker:** The immediate next step is to **Dockerize** the Spring Boot application to master containerization and ensure a consistent, easily portable development environment.
 
-- [ ] **Database Migration to Supabase or AWS RDS:** Next step is to migrate the database from **MySQL** to **AWS RDS** or **Supabase**, enabling managed cloud persistence and improved scalability.
+- [x] **Production Database Migration (PostgreSQL on AWS RDS):** The production database has been successfully migrated from MySQL to PostgreSQL, hosted on AWS RDS for improved reliability, scalability, and performance.
+- [x] **Secure HTTPS Configuration (Traefik):** HTTPS has been fully implemented using Traefik as a reverse proxy and certificate manager, ensuring encrypted and secure production traffic.
 
 ### Phase 2: Cloud Services and CI/CD
 
@@ -228,4 +319,5 @@ The following enhancements are planned to evolve **Orderly** by integrating indu
 - [x] **CI/CD Pipeline & Cloud Deployment (AWS):**
   - [x] Implement a **Continuous Integration/Continuous Deployment (CI/CD)** pipeline using **GitHub Actions**.
   - [x] Deployed the containerized API to an **AWS EC2 instance**, configured to automatically pull and restart the latest image via **Watchtower**.
-  - [ ] Implement **HTTPS** to secure production traffic.
+
+- [ ] **Monitoring & Observability:** Implement centralized logging and metrics monitoring using tools like Prometheus and Grafana.
