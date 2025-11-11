@@ -3,6 +3,7 @@ package com.iodsky.orderly.model;
 import java.math.BigDecimal;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -28,11 +29,14 @@ public class OrderItem {
 
   @ManyToOne
   @JoinColumn(name = "order_id")
+  @JsonIgnore
   private Order order;
 
   @ManyToOne
   @JoinColumn(name = "product_id")
+  @JsonIgnore
   private Product product;
+
   private int quantity;
   private BigDecimal price;
 }

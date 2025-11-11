@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iodsky.orderly.enums.OrderStatus;
 
 import jakarta.persistence.*;
@@ -30,6 +31,7 @@ public class Order {
 
   @ManyToOne
   @JoinColumn(name = "user_id")
+  @JsonIgnore
   private User user;
 
   private BigDecimal totalAmount;
@@ -38,8 +40,8 @@ public class Order {
   private OrderStatus orderStatus;
 
   @Builder.Default
-  @EqualsAndHashCode.Exclude
   @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+  @JsonIgnore
   private Set<OrderItem> items = new HashSet<>();
 
   @CreationTimestamp
