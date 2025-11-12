@@ -4,8 +4,6 @@ services:
     restart: always
     env_file:
       - .env
-    environment:
-      SPRING_PROFILES_ACTIVE: prod
     ports:
       - 8000
     labels:
