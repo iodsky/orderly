@@ -47,7 +47,7 @@ Databases:
 
 
 ### DevOps & Cloud
-* **Dockerized** application with multi-service setup via **Docker Compose** (Spring, MySQL, Watchtower).
+* **Dockerized** application with multi-service setup via **Docker Compose** (Spring, PostgreSQL, Watchtower).
 * **GitHub Actions CI/CD** pipeline for:
     * Running unit tests
     * Building Docker images
@@ -63,7 +63,7 @@ Databases:
 |-------|-------------|
 | **Framework** | Spring Boot |
 | **Language** | Java 21 |
-| **Database** | MySQL (Local) · PostgreSQL via AWS RDS (Production) |
+| **Database** | PostgreSQL (Local via Docker Compose · Production via AWS RDS) |
 | **Cloud Storage** | AWS S3 |
 | **Security** | Spring Security, JWT |
 | **Containerization** | Docker, Docker Compose |
@@ -152,26 +152,25 @@ The API is built around the following essential e-commerce models:
         activate:
           on-profile: local
     
-    datasource:
-      url: jdbc:mysql://${LOCAL_DB_HOST}:${LOCAL_DB_PORT}/${LOCAL_DB_NAME}
-      username: ${LOCAL_DB_USER}
-      password: ${LOCAL_DB_PASSWORD}
-      driver-class-name: com.mysql.cj.jdbc.Driver
+      datasource:
+        url: jdbc:postgresql://${DATASOURCE_HOST}:${DATASOURCE_PORT}/${DATASOURCE_DB}
+        username: ${DATASOURCE_USER}
+        password: ${DATASOURCE_PASSWORD}
+        driver-class-name: org.postgresql.Driver
     
-    jpa:
-      hibernate:
-        ddl-auto: update
-    properties:
-      hibernate:
-        format_sql: true
-        show_sql: true
-        dialect: org.hibernate.dialect.MySQL8Dialect
-    defer-datasource-initialization: true
+      jpa:
+        hibernate:
+          ddl-auto: update
+        properties:
+          hibernate:
+            format_sql: true
+            show_sql: true
+            dialect: org.hibernate.dialect.PostgreSQLDialect
+        defer-datasource-initialization: true
     
-    sql:
-      init:
-        mode: always
-        data-locations: classpath:data-local.sql
+      sql:
+        init:
+          mode: always
     
     aws:
       s3:
@@ -181,6 +180,10 @@ The API is built around the following essential e-commerce models:
     
 3.  **Run locally:**
     ```bash
+    # Start only the development database
+    docker compose -f compose.db.yml up -d
+    
+    # Run the Spring Boot app on the host with the local profile
     ./mvnw spring-boot:run -Dspring.profiles.active=local
     ```
 
@@ -192,20 +195,19 @@ The API will be accessible at `http://localhost:8000/api`.
 
 The project includes **two Docker Compose configurations** for different environments.
 
-### 1. Development (compose.local.yml)
+### 1. Development database (compose.db.yml)
 
-This setup is ideal for **local development**, using the application-local.yml profile.
+This setup runs only PostgreSQL for local development. The Spring Boot app runs on the host.
 
 **Usage:**
 
 ```bash
-docker-compose -f compose.local.yml up --build -d
+docker-compose -f compose.db.yml up -d
 ```
 
 This will:
-* Build and run your local Spring Boot app with the local profile.
-* Run MySQL in a linked container.
-* Expose the app on port 8000.
+* Run PostgreSQL with credentials from DATASOURCE_* variables. 
+* Expose PostgreSQL on port 5432.
 
 ### 2. Production (compose.prod.yml)
 
@@ -231,6 +233,7 @@ An example template is provided in **.env.template**:
 ```env
 # Server
 PORT=
+SPRING_PROFILES_ACTIVE=local
 
 # JWT
 JWT_SECRET_KEY=
@@ -243,18 +246,12 @@ DB_NAME=
 DB_USER=
 DB_PASSWORD=
 
-# Development database
-MYSQL_ROOT_PASSWORD=
-MYSQL_DATABASE=
-MYSQL_USER=
-MYSQL_PASSWORD=
-
-# Development datasource
-LOCAL_DB_HOST=
-LOCAL_DB_PORT=
-LOCAL_DB_NAME=
-LOCAL_DB_USER=
-LOCAL_DB_PASSWORD=
+# Development datasource (used by application-local.yml and compose.db.yml)
+DATASOURCE_HOST=localhost
+DATASOURCE_PORT=5432
+DATASOURCE_DB=
+DATASOURCE_USER=
+DATASOURCE_PASSWORD=
 
 # AWS S3
 AWS_S3_REGION=
