@@ -1,7 +1,7 @@
 # Orderly: E-commerce 🛒 RESTful API
 
 [![Java](https://img.shields.io/badge/Java-21-blue)]()
-[![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.x-brightgreen)]()
+[![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.5.5-brightgreen)]()
 [![Docker](https://img.shields.io/badge/Docker-Enabled-blue)]()
 [![CI/CD](https://img.shields.io/badge/GitHub_Actions-Active-lightgrey)]()
 [![Deployment](https://img.shields.io/badge/Deployed_on-AWS-orange)]()
@@ -22,7 +22,7 @@ From a DevOps perspective, **Orderly** is:
 * Integrated with AWS S3 for external image storage.
 
 Databases:
-* 🧩 Local development → uses MySQL, managed via Docker Compose
+* 🧩 Local development → uses PostgreSQL, managed via Docker Compose
 * ☁️ Production → uses PostgreSQL, provisioned through AWS RDS
 ---
 
@@ -80,7 +80,7 @@ The API is built around the following essential e-commerce models:
 * **`User`**: User details and authentication information.
 * **`Role`**: User roles (e.g., `ADMIN`, `CUSTOMER`).
 * **`Product`**: Details of an item for sale.
-* **`Image`**: Product images (currently stored in the database).
+* **`Image`**: Product image metadata (actual images stored in AWS S3).
 * **`Category`**: Classification for products.
 * **`Cart`**: A user's current collection of items before checkout.
 * **`CartItem`**: An individual item within a `Cart` with quantity.
@@ -89,7 +89,7 @@ The API is built around the following essential e-commerce models:
 
 ### Entity-Relationship Diagram (ERD)
 
-![](/docs/orderly_erd.png)
+![](/docs/erd.png)
 
 ---
 
@@ -113,7 +113,7 @@ The API is built around the following essential e-commerce models:
     * The application uses three YAML configuration files for different environments:
       * `application.yml` - Base configuration (shared across all environments)
       * `application-local.yml` - Local development configuration
-      * `application-prod.yml` - Production development
+      * `application-prod.yml` - Production configuration
     * You will also need a `.env` file (see the [Environment Variables](#-3-environment-variables) section below).
     
     **Example**
@@ -247,8 +247,8 @@ DB_USER=
 DB_PASSWORD=
 
 # Development datasource (used by application-local.yml and compose.db.yml)
-DATASOURCE_HOST=localhost
-DATASOURCE_PORT=5432
+DATASOURCE_HOST=
+DATASOURCE_PORT=
 DATASOURCE_DB=
 DATASOURCE_USER=
 DATASOURCE_PASSWORD=
