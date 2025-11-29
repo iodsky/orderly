@@ -153,9 +153,9 @@ The API is built around the following essential e-commerce models:
           on-profile: local
     
       datasource:
-        url: jdbc:postgresql://${DATASOURCE_HOST}:${DATASOURCE_PORT}/${DATASOURCE_DB}
-        username: ${DATASOURCE_USER}
-        password: ${DATASOURCE_PASSWORD}
+        url: jdbc:postgresql://${LOCAL_DB_HOST}:${LOCAL_DB_PORT}/${LOCAL_DB}
+        username: ${LOCAL_DB_USER}
+        password: ${LOCAL_DB_PASSWORD}
         driver-class-name: org.postgresql.Driver
     
       jpa:
@@ -206,7 +206,7 @@ docker-compose -f compose.db.yml up -d
 ```
 
 This will:
-* Run PostgreSQL with credentials from DATASOURCE_* variables. 
+* Run PostgreSQL with credentials from LOCAL_DB_* variables. 
 * Expose PostgreSQL on port 5432.
 
 ### 2. Production (compose.prod.yml)
@@ -240,18 +240,18 @@ JWT_SECRET_KEY=
 JWT_EXPIRATION_TIME=
 
 # Production datasource
-DB_HOST=
-DB_PORT=
-DB_NAME=
-DB_USER=
-DB_PASSWORD=
+CLOUD_DB=
+CLOUD_DB_HOST=
+CLOUD_DB_PORT=
+CLOUD_DB_USER=
+CLOUD_DB_PASSWORD=
 
 # Development datasource (used by application-local.yml and compose.db.yml)
-DATASOURCE_HOST=
-DATASOURCE_PORT=
-DATASOURCE_DB=
-DATASOURCE_USER=
-DATASOURCE_PASSWORD=
+LOCAL_DB=
+LOCAL_DB_HOST=
+LOCAL_DB_PORT=
+LOCAL_DB_USER=
+LOCAL_DB_PASSWORD=
 
 # AWS S3
 AWS_S3_REGION=
