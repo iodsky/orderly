@@ -3,8 +3,13 @@ package com.iodsky.orderly.controller;
 import java.util.List;
 import java.util.UUID;
 
+import com.iodsky.orderly.dto.PaginationDto;
+import com.iodsky.orderly.dto.mapper.PageMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -52,14 +57,16 @@ public class ProductController {
   )
 
   @GetMapping
-  public ResponseEntity<List<ProductDto>> getProducts(
+  public ResponseEntity<PaginationDto<ProductDto>> getProducts(
       @RequestParam(required = false) String category,
       @RequestParam(required = false) String brand,
-      @RequestParam(required = false) String name) {
+      @RequestParam(required = false) String name,
+      @RequestParam(defaultValue = "0") @Min(0) int page,
+      @RequestParam(defaultValue = "10") @Min(1) @Max(100) int limit
+  ) {
 
-    List<ProductDto> products = productService.getProducts(name, category, brand).stream()
-        .map(productMapper::toDto).toList();
-    return ResponseEntity.ok(products);
+    Page<Product> products = productService.getProducts(name, category, brand, page, limit);
+    return ResponseEntity.ok(PageMapper.map(products, productMapper::toDto));
   }
 
   @Operation(

@@ -17,6 +17,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -264,67 +268,97 @@ class ProductServiceTest {
 
         @Test
         void shouldReturnProductsByCategoryAndBrand() {
-            when(productRepository.findByCategoryNameAndBrand("Test Category", "Test Brand"))
-                    .thenReturn(List.of(existingProduct));
-            List<Product> result = productService.getProducts(null, "Test Category", "Test Brand");
+            Pageable pageable = PageRequest.of(0, 10);
+            Page<Product> expectedPage = new PageImpl<>(List.of(existingProduct), pageable, 1);
 
-            assertEquals(1, result.size());
-            verify(productRepository).findByCategoryNameAndBrand("Test Category", "Test Brand");
+            when(productRepository.findByCategoryNameAndBrand("Test Category", "Test Brand", pageable))
+                    .thenReturn(expectedPage);
+
+            Page<Product> result = productService.getProducts(null, "Test Category", "Test Brand", 0, 10);
+
+            assertEquals(1, result.getTotalElements());
+            assertEquals(1, result.getContent().size());
+            verify(productRepository).findByCategoryNameAndBrand("Test Category", "Test Brand", pageable);
             verifyNoMoreInteractions(productRepository);
         }
 
         @Test
         void shouldReturnProductsByBrandAndName() {
-            when(productRepository.findByBrandAndName("Test Brand", "Test Product"))
-                    .thenReturn(List.of(existingProduct));
-            List<Product> result = productService.getProducts("Test Product", null, "Test Brand");
+            Pageable pageable = PageRequest.of(0, 10);
+            Page<Product> expectedPage = new PageImpl<>(List.of(existingProduct), pageable, 1);
 
-            assertEquals(1, result.size());
-            verify(productRepository).findByBrandAndName("Test Brand", "Test Product");
+            when(productRepository.findByBrandAndName("Test Brand", "Test Product", pageable))
+                    .thenReturn(expectedPage);
+
+            Page<Product> result = productService.getProducts("Test Product", null, "Test Brand", 0, 10);
+
+            assertEquals(1, result.getTotalElements());
+            assertEquals(1, result.getContent().size());
+            verify(productRepository).findByBrandAndName("Test Brand", "Test Product", pageable);
             verifyNoMoreInteractions(productRepository);
         }
 
         @Test
         void shouldReturnProductsByCategory() {
-            when(productRepository.findByCategoryName("Test Category"))
-                    .thenReturn(List.of(existingProduct));
-            List<Product> result = productService.getProducts(null, "Test Category", null);
+            Pageable pageable = PageRequest.of(0, 10);
+            Page<Product> expectedPage = new PageImpl<>(List.of(existingProduct), pageable, 1);
 
-            assertEquals(1, result.size());
-            verify(productRepository).findByCategoryName("Test Category");
+            when(productRepository.findByCategoryName("Test Category", pageable))
+                    .thenReturn(expectedPage);
+
+            Page<Product> result = productService.getProducts(null, "Test Category", null, 0, 10);
+
+            assertEquals(1, result.getTotalElements());
+            assertEquals(1, result.getContent().size());
+            verify(productRepository).findByCategoryName("Test Category", pageable);
             verifyNoMoreInteractions(productRepository);
         }
 
         @Test
         void shouldReturnProductsByBrand() {
-            when(productRepository.findByBrand("Test Brand"))
-                    .thenReturn(List.of(existingProduct));
-            List<Product> result = productService.getProducts(null, null, "Test Brand");
+            Pageable pageable = PageRequest.of(0, 10);
+            Page<Product> expectedPage = new PageImpl<>(List.of(existingProduct), pageable, 1);
 
-            assertEquals(1, result.size());
-            verify(productRepository).findByBrand("Test Brand");
+            when(productRepository.findByBrand("Test Brand", pageable))
+                    .thenReturn(expectedPage);
+
+            Page<Product> result = productService.getProducts(null, null, "Test Brand", 0, 10);
+
+            assertEquals(1, result.getTotalElements());
+            assertEquals(1, result.getContent().size());
+            verify(productRepository).findByBrand("Test Brand", pageable);
             verifyNoMoreInteractions(productRepository);
         }
 
         @Test
         void shouldReturnProductsByName() {
-            when(productRepository.findByName("Test Product"))
-                    .thenReturn(List.of(existingProduct));
-            List<Product> result = productService.getProducts("Test Product", null, null);
+            Pageable pageable = PageRequest.of(0, 10);
+            Page<Product> expectedPage = new PageImpl<>(List.of(existingProduct), pageable, 1);
 
-            assertEquals(1, result.size());
-            verify(productRepository).findByName("Test Product");
+            when(productRepository.findByName("Test Product", pageable))
+                    .thenReturn(expectedPage);
+
+            Page<Product> result = productService.getProducts("Test Product", null, null, 0, 10);
+
+            assertEquals(1, result.getTotalElements());
+            assertEquals(1, result.getContent().size());
+            verify(productRepository).findByName("Test Product", pageable);
             verifyNoMoreInteractions(productRepository);
         }
 
         @Test
-        void shouldReturnAllProductsIfNoFiltersProvided () {
-            when(productRepository.findAll())
-                    .thenReturn(List.of(existingProduct));
-            List<Product> result = productService.getProducts(null, null, null);
+        void shouldReturnAllProductsIfNoFiltersProvided() {
+            Pageable pageable = PageRequest.of(0, 10);
+            Page<Product> expectedPage = new PageImpl<>(List.of(existingProduct), pageable, 1);
 
-            assertEquals(1, result.size());
-            verify(productRepository).findAll();
+            when(productRepository.findAll(pageable))
+                    .thenReturn(expectedPage);
+
+            Page<Product> result = productService.getProducts(null, null, null, 0, 10);
+
+            assertEquals(1, result.getTotalElements());
+            assertEquals(1, result.getContent().size());
+            verify(productRepository).findAll(pageable);
             verifyNoMoreInteractions(productRepository);
         }
     }

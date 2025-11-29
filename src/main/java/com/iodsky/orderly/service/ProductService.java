@@ -10,6 +10,9 @@ import com.iodsky.orderly.model.Product;
 import com.iodsky.orderly.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -65,25 +68,29 @@ public class ProductService {
 
     private String normalize(String value) {
         return (value == null || value.isBlank()) ? null : value;
+
     }
 
-    public List<Product> getProducts(String name, String category, String brand) {
+    public Page<Product> getProducts(String name, String category, String brand, int page, int limit) {
+
+        Pageable pageable = PageRequest.of(page, limit);
+
         name = normalize(name);
         category = normalize(category);
         brand = normalize(brand);
 
         if (category != null && brand != null) {
-            return productRepository.findByCategoryNameAndBrand(category, brand);
+            return productRepository.findByCategoryNameAndBrand(category, brand, pageable);
         } else if (brand != null && name != null) {
-            return productRepository.findByBrandAndName(brand, name);
+            return productRepository.findByBrandAndName(brand, name, pageable);
         } else if (category != null) {
-            return productRepository.findByCategoryName(category);
+            return productRepository.findByCategoryName(category, pageable);
         } else if (brand != null) {
-            return productRepository.findByBrand(brand);
+            return productRepository.findByBrand(brand, pageable);
         } else if (name != null) {
-            return productRepository.findByName(name);
+            return productRepository.findByName(name, pageable);
         } else {
-            return productRepository.findAll();
+            return productRepository.findAll(pageable);
         }
 
     }
