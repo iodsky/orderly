@@ -4,9 +4,9 @@ spring:
       on-profile: prod
 
   datasource:
-    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
-    username: ${DB_USER}
-    password: ${DB_PASSWORD}
+    url: jdbc:postgresql://${CLOUD_DB_HOST}:${CLOUD_DB_PORT}/${CLOUD_DB}
+    username: ${CLOUD_DB_USER}
+    password: ${CLOUD_DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
   jpa:
