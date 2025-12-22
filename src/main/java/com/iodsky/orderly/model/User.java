@@ -4,8 +4,6 @@ import java.util.*;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -35,7 +33,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @AllArgsConstructor
 @Builder
 @Table(name = "users")
-public class User implements UserDetails {
+public class User extends BaseModel implements UserDetails {
 
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
@@ -59,14 +57,6 @@ public class User implements UserDetails {
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name="role_id")
   private Role role;
-
-  @CreationTimestamp
-  @Column(updatable = false, name = "created_at")
-  private Date createdAt;
-
-  @UpdateTimestamp
-  @Column(name = "updated_at")
-  private Date updatedAt;
 
   @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
   private Cart cart;

@@ -4,20 +4,14 @@ import com.iodsky.orderly.dto.mapper.OrderMapper;
 import com.iodsky.orderly.dto.OrderDto;
 import com.iodsky.orderly.request.UpdateOrderStatusRequest;
 import com.iodsky.orderly.model.Order;
-import com.iodsky.orderly.model.User;
 import com.iodsky.orderly.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
@@ -30,12 +24,19 @@ public class OrderController {
     private final OrderService orderService;
     private final OrderMapper orderMapper;
 
+
+    @PostMapping
+    public ResponseEntity<OrderDto> createOrder() {
+        Order order = orderService.createOrder();
+        return new ResponseEntity<>(orderMapper.toDto(order), HttpStatus.CREATED);
+    }
+
     @Operation(
             summary = "Fetches all orders for the authenticated user."
     )
     @GetMapping()
-    public ResponseEntity<List<OrderDto>> getAllOrders(@AuthenticationPrincipal User user) {
-        List<OrderDto> orders = orderService.getAllOrders(user).stream().map(orderMapper::toDto).toList();
+    public ResponseEntity<List<OrderDto>> getAllOrders() {
+        List<OrderDto> orders = orderService.getAllOrders().stream().map(orderMapper::toDto).toList();
         return ResponseEntity.ok(orders);
     }
 
@@ -43,8 +44,8 @@ public class OrderController {
             summary = "Fetches an order by it's ID for the authenticated user."
     )
     @GetMapping("{id}")
-    public ResponseEntity<OrderDto> getOrder(@PathVariable UUID id, @AuthenticationPrincipal User user) {
-        Order order = orderService.getOrder(id, user);
+    public ResponseEntity<OrderDto> getOrder(@PathVariable UUID id) {
+        Order order = orderService.getOrder(id);
         return ResponseEntity.ok(orderMapper.toDto(order));
     }
 

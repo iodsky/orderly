@@ -25,7 +25,7 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 @Table(name = "carts")
-public class Cart {
+public class Cart extends BaseModel {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
   private UUID id;

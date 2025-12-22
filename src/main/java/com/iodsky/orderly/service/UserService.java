@@ -1,10 +1,13 @@
 package com.iodsky.orderly.service;
 
+import com.iodsky.orderly.exception.AuthenticationException;
 import com.iodsky.orderly.exception.DuplicateResourceException;
 import com.iodsky.orderly.model.User;
 import com.iodsky.orderly.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -57,6 +60,16 @@ public class UserService implements UserDetailsService {
         } catch (DataIntegrityViolationException e) {
             throw new DuplicateResourceException("Username or email already exists");
         }
+    }
+
+    public User getAuthenticatedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication.getPrincipal() instanceof  User user) {
+            return user;
+        }
+
+        throw new AuthenticationException("Authentication error");
     }
 
 }

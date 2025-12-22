@@ -1,7 +1,5 @@
-package com.iodsky.orderly.config;
+package com.iodsky.orderly.security;
 
-import com.iodsky.orderly.filter.JwtAuthenticationFilter;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;

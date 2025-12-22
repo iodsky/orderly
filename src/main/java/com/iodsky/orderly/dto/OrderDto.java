@@ -6,7 +6,7 @@ import lombok.Data;
 
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.Instant;
 import java.util.Set;
 import java.util.UUID;
 
@@ -14,7 +14,7 @@ import java.util.UUID;
 @Builder
 public class OrderDto {
     private UUID id;
-    private Date createdAt;
+    private Instant createdAt;
     private BigDecimal totalAmount;
     private OrderStatus status;
 

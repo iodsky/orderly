@@ -1,4 +1,4 @@
-package com.iodsky.orderly.filter;
+package com.iodsky.orderly.security;
 
 import com.iodsky.orderly.service.JwtService;
 import jakarta.servlet.FilterChain;

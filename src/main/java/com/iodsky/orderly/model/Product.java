@@ -3,11 +3,8 @@ package com.iodsky.orderly.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,7 +15,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @Table(name = "products")
-public class Product {
+public class Product extends BaseModel {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -37,10 +34,4 @@ public class Product {
     @JsonIgnore
     private List<Image> images;
 
-    @CreationTimestamp
-    private Date createdAt;
-
-    @UpdateTimestamp
-    @Column(updatable = false)
-    private Date updatedAt;
 }

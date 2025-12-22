@@ -4,9 +4,9 @@ services:
     image: "postgres:latest"
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ${DATASOURCE_DB}
-      POSTGRES_USER: ${DATASOURCE_USER}
-      POSTGRES_PASSWORD: ${DATASOURCE_PASSWORD}
+      POSTGRES_DB: ${LOCAL_DB}
+      POSTGRES_USER: ${LOCAL_DB_USER}
+      POSTGRES_PASSWORD: ${LOCAL_DB _PASSWORD}
     ports:
       - 5432:5432
     volumes:

@@ -34,6 +34,8 @@ class CartServiceTest {
     private ProductService productService;
     @Mock
     private CartItemRepository cartItemRepository;
+    @Mock
+    private UserService userService;
 
     @InjectMocks
     private CartService cartService;
@@ -142,26 +144,30 @@ class CartServiceTest {
 
         @Test
         void shouldReturnCartIfExists() {
+            when(userService.getAuthenticatedUser()).thenReturn(user);
             when(cartRepository.findByUserId(user.getId())).thenReturn(Optional.of(cart));
 
-            Cart result = cartService.getCartByUser(user);
+            Cart result = cartService.getUserCart();
 
             assertNotNull(result);
             assertEquals(cart, result);
 
+            verify(userService).getAuthenticatedUser();
             verify(cartRepository).findByUserId(user.getId());
         }
 
         @Test
         void shouldCreateNewCartIfNoneExists() {
+            when(userService.getAuthenticatedUser()).thenReturn(user);
             when(cartRepository.findByUserId(user.getId())).thenReturn(Optional.empty());
             when(cartRepository.save(any(Cart.class))).thenAnswer(inv -> inv.getArgument(0));
 
-            Cart result = cartService.getCartByUser(user);
+            Cart result = cartService.getUserCart();
 
             assertNotNull(result);
             assertEquals(user.getId(), result.getUser().getId());
 
+            verify(userService).getAuthenticatedUser();
             verify(cartRepository).findByUserId(user.getId());
             verify(cartRepository).save(any(Cart.class));
         }
@@ -176,14 +182,16 @@ class CartServiceTest {
             cart.getItems().add(new CartItem());
             cart.getItems().add(new CartItem());
 
+            when(userService.getAuthenticatedUser()).thenReturn(user);
             when(cartRepository.findByUserId(user.getId())).thenReturn(Optional.of(cart));
             when(cartRepository.save(cart)).thenAnswer(inv -> inv.getArgument(0));
 
-            Cart result = cartService.clearCart(user);
+            Cart result = cartService.clearCart();
 
             assertNotNull(result);
             assertTrue(result.getItems().isEmpty());
 
+            verify(userService).getAuthenticatedUser();
             verify(cartRepository).findByUserId(user.getId());
             verify(cartRepository).save(cart);
         }
@@ -196,25 +204,28 @@ class CartServiceTest {
 
         @Test
         void shouldReturnCartItemIfFound() {
+            when(userService.getAuthenticatedUser()).thenReturn(user);
             when(cartRepository.findByUserId(user.getId()))
                     .thenReturn(Optional.of(cart));
 
-            CartItem result = cartService.getCartItem(user, product.getId());
+            CartItem result = cartService.getCartItem(product.getId());
 
             assertNotNull(result);
             assertEquals(product.getId(), result.getProduct().getId());
+            verify(userService).getAuthenticatedUser();
             verify(cartRepository).findByUserId(user.getId());
         }
 
         @Test
         void shouldThrowIfCartItemNotFound() {
             cart.getItems().clear();
+            when(userService.getAuthenticatedUser()).thenReturn(user);
             when(cartRepository.findByUserId(user.getId()))
                     .thenReturn(Optional.of(cart));
 
             assertThrows(
                     ResourceNotFoundException.class,
-                    () -> cartService.getCartItem(user, cartId)
+                    () -> cartService.getCartItem(cartId)
             );
         }
     }
@@ -225,6 +236,7 @@ class CartServiceTest {
 
         @Test
         void shouldAddNewItemIfNotExists() {
+            when(userService.getAuthenticatedUser()).thenReturn(user);
             when(cartRepository.findByUserId(user.getId()))
                     .thenReturn(Optional.of(cart));
             when(productService.getProduct(newProduct.getId()))
@@ -234,13 +246,14 @@ class CartServiceTest {
             when(cartRepository.save(cart))
                     .thenReturn(cart);
 
-            CartItem result = cartService.addItemToCart(user, newProduct.getId(), 2);
+            CartItem result = cartService.addItemToCart(newProduct.getId(), 2);
 
             assertNotNull(result);
             assertEquals(2, result.getQuantity());
             assertEquals(newProduct, result.getProduct());
             assertEquals(newProduct.getPrice(), result.getUnitPrice());
 
+            verify(userService).getAuthenticatedUser();
             verify(cartRepository).findByUserId(user.getId());
             verify(productService).getProduct(newProduct.getId());
             verify(cartItemRepository).save(any(CartItem.class));
@@ -249,6 +262,7 @@ class CartServiceTest {
 
         @Test
         void shouldIncreaseQuantityIfItemAlreadyExists() {
+            when(userService.getAuthenticatedUser()).thenReturn(user);
             when(cartRepository.findByUserId(user.getId()))
                     .thenReturn(Optional.of(cart));
             when(productService.getProduct(product.getId()))
@@ -258,7 +272,7 @@ class CartServiceTest {
             when(cartRepository.save(cart))
                     .thenReturn(cart);
 
-            CartItem result = cartService.addItemToCart(user, product.getId(), 3);
+            CartItem result = cartService.addItemToCart(product.getId(), 3);
 
             assertEquals(4, result.getQuantity());
             verify(cartItemRepository).save(cartItem);
@@ -272,14 +286,16 @@ class CartServiceTest {
 
         @Test
         void shouldRemoveItemIfExists() {
+            when(userService.getAuthenticatedUser()).thenReturn(user);
             when(cartRepository.findByUserId(user.getId()))
                     .thenReturn(Optional.of(cart));
             when(cartRepository.save(any(Cart.class)))
                     .thenReturn(cart);
 
-            cartService.removeItemFromCart(user, product.getId());
+            cartService.removeItemFromCart(product.getId());
 
             assertTrue(cart.getItems().isEmpty());
+            verify(userService).getAuthenticatedUser();
             verify(cartRepository).findByUserId(user.getId());
             verify(cartRepository).save(cart);
         }
@@ -287,12 +303,13 @@ class CartServiceTest {
         @Test
         void shouldThrowExceptionIfItemNotFound() {
             cart.getItems().clear();
+            when(userService.getAuthenticatedUser()).thenReturn(user);
             when(cartRepository.findByUserId(user.getId()))
                     .thenReturn(Optional.of(cart));
 
             assertThrows(
                     ResourceNotFoundException.class,
-                    () -> cartService.removeItemFromCart(user, product.getId())
+                    () -> cartService.removeItemFromCart(product.getId())
             );
         }
     }
@@ -303,26 +320,29 @@ class CartServiceTest {
 
         @Test
         void shouldUpdateQuantityIfGreaterThanZero() {
+            when(userService.getAuthenticatedUser()).thenReturn(user);
             when(cartRepository.findByUserId(user.getId()))
                     .thenReturn(Optional.of(cart));
             when(cartRepository.save(cart))
                     .thenReturn(cart);
 
-            CartItem result = cartService.updateItemQuantity(user, product.getId(), 5);
+            CartItem result = cartService.updateItemQuantity(product.getId(), 5);
 
             assertEquals(5, result.getQuantity());
+            verify(userService).getAuthenticatedUser();
             verify(cartRepository).findByUserId(user.getId());
             verify(cartRepository).save(cart);
         }
 
         @Test
         void shouldRemoveItemIfQuantityIsZeroOrLess() {
+            when(userService.getAuthenticatedUser()).thenReturn(user);
             when(cartRepository.findByUserId(user.getId()))
                     .thenReturn(Optional.of(cart));
             when(cartRepository.save(cart))
                     .thenReturn(cart);
 
-            CartItem result = cartService.updateItemQuantity(user, product.getId(), 0);
+            CartItem result = cartService.updateItemQuantity(product.getId(), 0);
 
             assertFalse(cart.getItems().contains(result));
             verify(cartItemRepository).delete(cartItem);
@@ -332,12 +352,13 @@ class CartServiceTest {
         @Test
         void shouldThrowExceptionIfItemNotFound() {
             cart.getItems().clear();
+            when(userService.getAuthenticatedUser()).thenReturn(user);
             when(cartRepository.findByUserId(user.getId()))
                     .thenReturn(Optional.of(cart));
 
             assertThrows(
                     ResourceNotFoundException.class,
-                    () -> cartService.updateItemQuantity(user, product.getId(), anyInt())
+                    () -> cartService.updateItemQuantity(product.getId(), 5)
             );
         }
     }

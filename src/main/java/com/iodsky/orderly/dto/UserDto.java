@@ -3,7 +3,7 @@ package com.iodsky.orderly.dto;
 import lombok.Builder;
 import lombok.Data;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.UUID;
 
 @Data
@@ -15,6 +15,6 @@ public class UserDto {
     private String email;
     private String username;
     private String role;
-    private Date createdAt;
-    private Date updatedAt;
+    private Instant createdAt;
+    private Instant updatedAt;
 }

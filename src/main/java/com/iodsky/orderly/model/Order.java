@@ -1,7 +1,6 @@
 package com.iodsky.orderly.model;
 
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -10,21 +9,16 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iodsky.orderly.enums.OrderStatus;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Table(name = "orders")
-public class Order {
+public class Order extends BaseModel {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
   private UUID id;
@@ -44,10 +38,4 @@ public class Order {
   @JsonIgnore
   private Set<OrderItem> items = new HashSet<>();
 
-  @CreationTimestamp
-  @Column(updatable = false)
-  private Date createdAt;
-
-  @UpdateTimestamp
-  private Date updatedAt;
 }

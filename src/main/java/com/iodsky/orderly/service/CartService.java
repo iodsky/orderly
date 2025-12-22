@@ -21,6 +21,7 @@ public class CartService {
   private final CartRepository cartRepository;
   private final CartItemRepository cartItemRepository;
   private final ProductService productService;
+  private final UserService userService;
 
   public Cart saveCart(Cart cart) {
     return cartRepository.save(cart);
@@ -31,25 +32,26 @@ public class CartService {
             .orElseThrow(() -> new ResourceNotFoundException("Cart not found for Id " + id));
   }
 
-  public Cart getCartByUser(User user) {
+  public Cart getUserCart() {
+    User user = userService.getAuthenticatedUser();
     return cartRepository.findByUserId(user.getId()).orElseGet(() -> saveCart(new Cart(user)));
   }
 
-  public Cart clearCart(User user) {
-    Cart cart = getCartByUser(user);
+  public Cart clearCart() {
+    Cart cart = getUserCart();
 
     cart.getItems().clear();
     return cartRepository.save(cart);
   }
 
-  public CartItem getCartItem(User user, UUID productId) {
-    return this.getCartByUser(user).getItems().stream().filter(i -> i.getProduct().getId().equals(productId))
+  public CartItem getCartItem(UUID productId) {
+    return this.getUserCart().getItems().stream().filter(i -> i.getProduct().getId().equals(productId))
             .findFirst().orElseThrow(() -> new ResourceNotFoundException("Cart item not found for id " + productId));
   }
 
-  public CartItem addItemToCart(User user, UUID productId, int quantity) {
+  public CartItem addItemToCart(UUID productId, int quantity) {
     // Get cart
-    Cart cart = this.getCartByUser(user);
+    Cart cart = getUserCart();
     // Get product
     Product product = productService.getProduct(productId);
 
@@ -75,8 +77,8 @@ public class CartService {
     return item;
   }
 
-  public void removeItemFromCart(User user, UUID productId) {
-    Cart cart = this.getCartByUser(user);
+  public void removeItemFromCart(UUID productId) {
+    Cart cart = getUserCart();
     CartItem item = cart.getItems().stream()
             .filter(i -> i.getProduct().getId().equals(productId))
             .findFirst()
@@ -85,8 +87,8 @@ public class CartService {
     this.saveCart(cart);
   }
 
-  public CartItem updateItemQuantity(User user, UUID productId, int quantity) {
-    Cart cart = this.getCartByUser(user);
+  public CartItem updateItemQuantity(UUID productId, int quantity) {
+    Cart cart = this.getUserCart();
     CartItem item = cart.getItems().stream()
             .filter(i -> i.getProduct().getId().equals(productId)).findFirst()
             .orElseThrow(() -> new ResourceNotFoundException("Cart item not found for product id " + productId));
