@@ -64,7 +64,7 @@ class OrderServiceTest {
         order = Order.builder()
                 .id(orderId)
                 .user(normalUser)
-                .orderStatus(OrderStatus.PROCESSING)
+                .orderStatus(OrderStatus.PENDING)
                 .build();
     }
 
@@ -95,7 +95,7 @@ class OrderServiceTest {
 
             assertNotNull(result);
             assertEquals(normalUser, result.getUser());
-            assertEquals(OrderStatus.PROCESSING, result.getOrderStatus());
+            assertEquals(OrderStatus.PENDING, result.getOrderStatus());
             verify(cartService).getUserCart();
             verify(cartService).saveCart(any(Cart.class));
             verify(orderRepository).save(any(Order.class));
@@ -162,7 +162,8 @@ class OrderServiceTest {
     @DisplayName("updateOrderStatus tests")
     class UpdateOrderStatusTests {
         @Test
-        void shouldUpdateStatus() {
+        void shouldUpdateStatusIfAdmin() {
+            when(userService.getAuthenticatedUser()).thenReturn(adminUser);
             when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
             when(orderRepository.save(any(Order.class))).thenAnswer(inv -> inv.getArgument(0));
 
@@ -171,17 +172,80 @@ class OrderServiceTest {
             assertNotNull(result);
             assertEquals(OrderStatus.SHIPPED, result.getOrderStatus());
 
+            verify(userService).getAuthenticatedUser();
             verify(orderRepository).findById(orderId);
             verify(orderRepository).save(order);
         }
 
         @Test
         void shouldThrowIfOrderNotFound() {
+            when(userService.getAuthenticatedUser()).thenReturn(adminUser);
             when(orderRepository.findById(orderId)).thenReturn(Optional.empty());
 
             assertThrows(ResourceNotFoundException.class,
                     () -> orderService.updateOrderStatus(orderId, OrderStatus.CANCELLED));
 
+            verify(userService).getAuthenticatedUser();
+            verify(orderRepository).findById(orderId);
+        }
+
+        @Test
+        void shouldAllowOwnerToCancelPendingOrder() {
+            when(userService.getAuthenticatedUser()).thenReturn(normalUser);
+            when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
+            when(orderRepository.save(any(Order.class))).thenAnswer(inv -> inv.getArgument(0));
+
+            Order result = orderService.updateOrderStatus(orderId, OrderStatus.CANCELLED);
+
+            assertNotNull(result);
+            assertEquals(OrderStatus.CANCELLED, result.getOrderStatus());
+
+            verify(userService).getAuthenticatedUser();
+            verify(orderRepository).findById(orderId);
+            verify(orderRepository).save(order);
+        }
+
+        @Test
+        void shouldThrowIfNonOwnerTriesToUpdateOrder() {
+            User otherUser = User.builder()
+                    .id(UUID.randomUUID())
+                    .username("otherUser")
+                    .role(Role.builder().role("USER").build())
+                    .build();
+
+            when(userService.getAuthenticatedUser()).thenReturn(otherUser);
+            when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
+
+            assertThrows(Exception.class,
+                    () -> orderService.updateOrderStatus(orderId, OrderStatus.CANCELLED));
+
+            verify(userService).getAuthenticatedUser();
+            verify(orderRepository).findById(orderId);
+        }
+
+        @Test
+        void shouldThrowIfOwnerTriesToSetNonCancelledStatus() {
+            when(userService.getAuthenticatedUser()).thenReturn(normalUser);
+            when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
+
+            assertThrows(Exception.class,
+                    () -> orderService.updateOrderStatus(orderId, OrderStatus.SHIPPED));
+
+            verify(userService).getAuthenticatedUser();
+            verify(orderRepository).findById(orderId);
+        }
+
+        @Test
+        void shouldThrowIfOwnerTriesToCancelNonPendingOrder() {
+            order.setOrderStatus(OrderStatus.SHIPPED);
+
+            when(userService.getAuthenticatedUser()).thenReturn(normalUser);
+            when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
+
+            assertThrows(Exception.class,
+                    () -> orderService.updateOrderStatus(orderId, OrderStatus.CANCELLED));
+
+            verify(userService).getAuthenticatedUser();
             verify(orderRepository).findById(orderId);
         }
     }
