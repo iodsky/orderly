@@ -7,10 +7,10 @@ import com.iodsky.orderly.model.Order;
 import com.iodsky.orderly.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -53,8 +53,7 @@ public class OrderController {
             summary = "Updates the status of an order by ID. Only admins can perform this action."
     )
     @PatchMapping("{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<OrderDto> updateOrderStatus(@PathVariable UUID id, @RequestBody UpdateOrderStatusRequest dto) {
+    public ResponseEntity<OrderDto> updateOrderStatus(@PathVariable UUID id, @Valid @RequestBody UpdateOrderStatusRequest dto) {
         Order order = orderService.updateOrderStatus(id, dto.getStatus());
         return ResponseEntity.ok(orderMapper.toDto(order));
     }

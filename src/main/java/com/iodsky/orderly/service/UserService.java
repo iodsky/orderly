@@ -1,11 +1,11 @@
 package com.iodsky.orderly.service;
 
-import com.iodsky.orderly.exception.AuthenticationException;
 import com.iodsky.orderly.exception.DuplicateResourceException;
 import com.iodsky.orderly.model.User;
 import com.iodsky.orderly.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -69,7 +70,7 @@ public class UserService implements UserDetailsService {
             return user;
         }
 
-        throw new AuthenticationException("Authentication error");
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "No authentication principal found");
     }
 
 }

@@ -6,9 +6,11 @@ import com.iodsky.orderly.exception.ResourceNotFoundException;
 import com.iodsky.orderly.model.*;
 import com.iodsky.orderly.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.UUID;
@@ -34,7 +36,7 @@ public class OrderService {
         Order order = Order.builder()
                 .user(cart.getUser())
                 .totalAmount(cart.getTotalAmount())
-                .orderStatus(OrderStatus.PROCESSING)
+                .orderStatus(OrderStatus.PENDING)
                 .build();
 
         cart.getItems().forEach(item -> {
@@ -72,8 +74,28 @@ public class OrderService {
     }
 
     public Order updateOrderStatus(UUID orderId, OrderStatus status) {
+        User user = userService.getAuthenticatedUser();
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with id " + orderId));
+
+        boolean isAdmin = "ADMIN".equals(user.getRole().getRole());
+        boolean isOwner = order.getUser().getId().equals(user.getId());
+
+        if (!isAdmin) {
+
+            if (!isOwner) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not authorized to update this order");
+            }
+
+            if (status != OrderStatus.CANCELLED) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Customers can only cancel orders");
+            }
+
+            if (order.getOrderStatus() != OrderStatus.PENDING) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Only pending orders can be cancelled");
+            }
+
+        }
 
         order.setOrderStatus(status);
         return orderRepository.save(order);

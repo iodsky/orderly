@@ -10,4 +10,6 @@ public class UpdateOrderStatusRequest {
 
   @NotNull(message = "Order status cannot be blank")
   private OrderStatus status;
+
 }
+

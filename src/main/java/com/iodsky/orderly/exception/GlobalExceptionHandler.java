@@ -15,6 +15,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
+import org.springframework.web.server.ResponseStatusException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -114,6 +115,14 @@ public class GlobalExceptionHandler {
 
     ErrorResponse error = new ErrorResponse(LocalDateTime.now(), 400, "Invalid username or password", null);
     return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(ResponseStatusException.class)
+  public ResponseEntity<ErrorResponse> handleResponseStatusException(ResponseStatusException ex) {
+    logger.error("HTTP error occurred: {}", ex.getMessage(), ex);
+
+    ErrorResponse error = new ErrorResponse(LocalDateTime.now(), ex.getStatusCode().value(), ex.getReason(), null);
+    return new ResponseEntity<>(error, ex.getStatusCode());
   }
 
   @ExceptionHandler(Exception.class)

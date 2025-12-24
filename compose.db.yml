@@ -6,7 +6,7 @@ services:
     environment:
       POSTGRES_DB: ${LOCAL_DB}
       POSTGRES_USER: ${LOCAL_DB_USER}
-      POSTGRES_PASSWORD: ${LOCAL_DB _PASSWORD}
+      POSTGRES_PASSWORD: ${LOCAL_DB_PASSWORD}
     ports:
       - 5432:5432
     volumes:
